@@ -1,0 +1,46 @@
+mat-card {
+    margin: 3rem;
+    border-left: 5px solid var(--primary-color);
+}
+
+mat-hint {
+    font-size: 8pt;
+}
+
+.ssnField {
+    margin: 0;
+    padding: 0;
+}
+
+.mat-form-field {
+    margin-bottom: 1em;
+    width: 100%;
+    font-size: 10pt;
+}
+
+.profile { 
+    display:inline-block; 
+    margin: 0 0 2em 1em; 
+    padding:0; 
+    color: #595959;
+}
+
+.profile-icon { 
+    display:table-cell; 
+    vertical-align:middle; 
+    margin:0; 
+    padding:0;   
+    height:80px; 
+    
+}
+
+.profile-name { 
+    display:table-cell; 
+    vertical-align:middle; 
+    font-size: 1.8em;
+    font-weight: 300;
+}
+
+.button-custom {
+    margin-right: 1em;
+}

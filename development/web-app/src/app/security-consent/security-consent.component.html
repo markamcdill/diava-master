@@ -1,0 +1,26 @@
+<div class="app-consent-screen" *ngIf="showSplash">
+    <div class="app-consent-screen-inner">
+        <div class="app-title">
+            D&#299;<span>AVA</span>
+            
+        </div>
+        <div class="app-subTitle">
+            DIA Visit Application
+        </div>
+        <div class="app-consent">
+            <div>
+            This web site is a TS//SI/TK//NOFORN classified intranet for official U.S. Government 
+            business by authorized users only. Use by unauthorized persons, or for personal business 
+            is prohibited and may constitute a violation of 18 U.S.C. 1030 and other Federal laws. 
+            You have no reasonable expectation of privacy while accessing this web site. Access to 
+            this site may be monitored, intercepted, recorded, read, copied, or captured by authorized 
+            system personnel. Systems personnel may give law enforcement or other appropriate officials 
+            any potential evidence of a crime, fraud, or employee misconduct found on this site. Use of 
+            this site by any user, authorized or unauthorized implies agreement to these conditions.
+            </div>
+            <div class="acceptButton" >
+                <a href="#" routerLink="/submitvisit" class="primary-cta" (click)="acceptSecurity()">Accept</a>
+            </div>
+        </div>
+    </div>
+</div>

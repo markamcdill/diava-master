@@ -1,0 +1,19 @@
+<section class="hero">
+    <div *ngIf="getStarted">
+        <div class="alert-cta" *ngIf="showAlert">
+                {{this.alertMsg}}
+        </div>
+        <div class="welcome-cta">
+            {{this.welcomeMsg}}
+        </div>
+        <div class="hero-content">
+            <div class="hero-cta">
+                <a href="#" routerLink="/submitvisit" class="primary-cta">Let's Get Started<br /><span>Submit New Notification</span></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+

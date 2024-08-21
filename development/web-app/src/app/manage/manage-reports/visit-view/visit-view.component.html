@@ -1,0 +1,93 @@
+<h2 mat-dialog-title style="border-bottom: 1px solid #ccc;"><i class="fas fa-file-alt"></i> Record Details</h2>
+  
+  <mat-dialog-content class="mat-typography" style="padding-bottom: 1.5em;">
+    
+    <mat-card *ngIf="visitData.on_behalf === 'Yes'">
+      <div>
+        <i class="fas fa-exclamation-circle fa-2x icon-color"></i>
+        <p style="font-size: 9pt; margin-left: 20px;">
+           This visit notification was submitted by <strong>{{visitData.visit_submitted_by}}</strong> on behalf of
+          <strong>{{visitData.traveler_rank_grade}}&nbsp;{{visitData.traveler_fname}}&nbsp;{{visitData.traveler_lname}}</strong>
+        <p>
+      </div>
+    </mat-card>
+
+    <div class="record-data">
+      <h2>Visit Details</h2>
+      <h4>Classification: <span>{{visitData.visit_classification_full}}</span></h4>
+      <h4>Visit ID: <span>{{visitData.visit_id}}</span></h4>
+      <h4>Visit Status: <span>{{visitData.visit_status}}</span></h4>
+      <h4>Destination: <span>{{visitData.location_name}}</span></h4>
+      <h4>Visit Submitted By: <span>{{visitData.visit_submitted_by}}</span></h4>
+      <h4>Visit Submitted On: <span>{{this.visit_create_date_display}}</span></h4>
+      <h4>Last Modified: <span>{{this.visit_modify_date_display}}</span></h4>
+    </div>
+
+    <div class="record-data">
+      <h2>Visitor Information</h2>
+      <h4>First Name: <span>{{visitData.traveler_fname}}</span></h4>
+      <h4>Middle Initial: <span>{{visitData.traveler_m_initial}}</span></h4>
+      <h4>Last Name: <span>{{visitData.traveler_lname}}</span></h4>
+      <h4>Social Security Number: <span>{{visitData.traveler_ssn}}</span><span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span></h4>
+      <h4>Records Protect: <span>{{visitData.traveler_rp}}</span></h4>
+      <h4>Rank/Grade: <span>{{visitData.traveler_rank_grade}}</span></h4>
+      <h4>Phone Cell: <span>{{visitData.traveler_phone_cell}}</span></h4>
+      <h4>Phone VoIP: <span>{{visitData.traveler_phone_nsts}}</span></h4>
+      <h4>Email JWICS: <span>{{visitData.traveler_email_jwics}}</span></h4>
+      <h4>Email Unclass: <span>{{visitData.traveler_email_niprnet}}</span></h4>
+    </div>
+  
+    
+    <div class="record-data">
+      <h2>Clearance Information</h2>
+      <h4>Clearance MSG DTG: <span>{{visitData.visit_clearance_msg_dtg}}</span></h4>
+    </div>
+  
+    
+    <div class="record-data">
+      <h2>Office Visit Information</h2>
+      <h4>Arrival-Departure Dates: <span>{{visitData.visit_start_dt}} - {{visitData.visit_end_dt}}</span></h4>
+      <h4>Office Name: <span>{{visitData.visit_office_name}}</span></h4>
+      <h4>Office City: <span>{{visitData.visit_office_city}}</span></h4>
+      <h4>Office Country: <span>{{visitData.visit_office_country}}</span></h4>
+      <h4>Point of Contact: <span>{{visitData.visit_fname}}</span></h4>
+      <h4>Point of Contact Email: <span>{{visitData.visit_email}}</span></h4>
+      <h4>Name of Lodging: <span>{{visitData.visit_lodging_name}}</span></h4>
+      <h4>Lodging Address: <span>{{visitData.visit_lodging_street}}</span></h4>
+      <h4>Lodging State: <span>{{visitData.visit_lodging_state}}</span></h4>
+      <h4>Lodging Phone: <span>{{visitData.visit_lodging_phone}}</span></h4>
+      <h4>Purpose of Visit: <span>{{visitData.visit_purpose}}</span></h4>
+      <h4>Additional Offices: <span>{{visitData.visit_additional_offices}}</span></h4>
+    </div>
+
+    <div class="record-data">
+    <h2>Additional Travelers<span class="privacy-statement" style="font-weight: 400;" (click)="openPAS()">Privacy Act Statement</span></h2>
+      
+        <table class="additional-travelers">
+          <tr *ngIf="VisitorList.length > 0">
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Rank</th>
+            <th>SSN</th>
+            <th>Record Protect?</th>
+          </tr>
+          <tr *ngFor="let Visitor of VisitorList">
+            <td>{{Visitor.add_visitor_fname}}</td>
+            <td>{{Visitor.add_visitor_lname}}</td>
+            <td>{{Visitor.add_visitor_rank_grade}}</td>
+            <td>{{Visitor.add_visitor_ssn}}</td>
+            <td>{{Visitor.add_visitor_rp}}</td>
+          </tr>
+          <tr *ngIf="VisitorList.length == 0">
+            <td style="text-align: center;margin-top: 25px;" colspan="6">
+              <h3>No Additional Travelers</h3>
+            </td>
+          </tr>
+        </table>
+     
+      </div>
+  
+  </mat-dialog-content>
+  <mat-dialog-actions style="border-top: 1px solid #ccc;" align="end">
+    <button mat-stroked-button mat-dialog-close>Close</button>
+  </mat-dialog-actions>

@@ -1,0 +1,405 @@
+:root {
+  // Begin Global Colors
+    --primary-color: #007af3; //primary color theme
+    --primary-color-maintainer: #660000;//primary color theme for maintainer functions
+    --primary-color-links: #007af3; //primary color of links
+    --primary-color-links-hover: #686868; //primary color of links on hover
+  //end Global Colors
+  }
+
+
+@font-face {
+    font-family: "Montserrat";
+    src: local("Montserrat"), url(./assets/fonts/Montserrat/Montserrat-Regular.ttf) format("truetype");
+  }
+
+html, body { 
+    height: 100%; 
+    background: #f8f9fa;
+    // background: #f0f3ff; //DO NOT DELETE THIS LINE, future reference 
+    color: #4a5968;
+    margin: 0; 
+    font-family: "Montserrat", Arial, Helvetica, sans-serif;
+  }
+
+a {
+  color: var(--primary-color-links);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--primary-color-links-hover);
+  }
+}
+
+.privacy-statement {
+    margin-left: 1em;
+    font-size: 8pt;
+    float: 45px;
+    color: var(--primary-color-links);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--primary-color-links-hover);
+    }
+
+  }
+
+.mat-button {
+    background-color: var(--primary-color);
+    color: #fff;
+  }
+
+// Begin Tooltip
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+  
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    // transition-delay: 2s; //DO NOT DELETE THIS LINE, future reference 
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+  }
+  
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
+// End Tooltip
+
+//begin styles for large buttons on site
+.hero {
+  text-align: center;
+  padding: 2em 2em;
+
+  p {        
+      font-size: 1.1em;
+      margin-bottom: 1em; 
+   
+  }
+
+  .primary-cta {
+      background: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      padding: .6em 1.3em;
+      font-size: 1.4em;
+      border-radius: 5em;
+      display: inline-block;
+      cursor: pointer;
+      border: 1px solid var(--primary-color);
+
+  }
+
+  .primary-cta:hover {
+      background-color: #ffffff;
+      color: var(--primary-color);
+  }
+}
+//end styles for large buttons on site
+
+.hero-cta span{
+  font-size: 10pt;
+}
+
+.filter-cta {
+  margin-bottom: 3em;
+
+  mat-label {
+    font-size: 13pt;
+  }
+
+  input {
+    font-size: 13pt;
+    margin: 5px 0;
+    padding-left: 10px;
+  }
+
+  mat-hint {
+    font-size: 10pt;
+  } 
+}
+
+.pageTitle {
+  margin: 2rem;
+  font-size: 1.5em;
+}
+
+.mat-tooltip {
+  //Option One - white background
+      font-size: 15px;
+      white-space: pre-line;
+      color: gray !important;
+      background-color: rgba(255, 255, 255, .9);
+      border:1px solid gray;
+      max-width: unset !important;
+  
+  //Option Two - red background - //DO NOT DELETE, future reference
+      // font-size: 15px;
+      // white-space: pre-line;
+      // color: #fff !important;
+      // background-color: #b71c1c;
+      // border:1px solid gray;
+      // max-width: unset !important;
+    
+  
+  //Option three - blue background - //DO NOT DELETE THIS LINE, future reference
+    //  font-size: 15px;
+    //  white-space: pre-line;
+    //  color: #fff !important;
+    //  background-color: var(--primary-color);
+    //  border:1px solid gray;
+    //  max-width: unset !important;
+  
+}
+
+.mat-row:hover {
+  background-color: #f2f2f2;
+}
+
+//Custom styles for material snack bar - //DO NOT DELETE THIS LINE, future reference
+// .success-snackbar {
+//   background-color: #009973;
+//   box-shadow: none;
+// }
+
+// .snackbar-msg-icon {
+//   background-color: red !important;
+// }
+
+
+// .snackbar-msg-icon:after {
+//   font-family: "FontAwesome";
+//   content: "\f071";
+// }
+
+.buttonAlignRight {
+  text-align: end;
+}
+
+
+.content-container {
+  padding-bottom: 2em;
+}
+
+.card {
+  padding-bottom: 2em;
+}
+
+#editData {
+  color: #8c8c8c;
+  padding: 0 1em;
+
+  span {
+      font-size: 12pt;
+      cursor: pointer;
+  }
+
+  span:hover {
+      text-shadow: 0px 2px 5px var(--primary-color);
+      color: var(--primary-color);
+      
+  }
+}
+
+#deleteData {
+  color: #8c8c8c;
+  padding: 0 1em;
+  
+    span {
+        font-size: 12pt;
+        cursor: pointer;
+    }
+  
+    span:hover {
+        text-shadow: 0px 2px 5px var(--primary-color-links);
+        color: #cc0000;
+        
+    }
+  }
+  
+  .dialog-close-icon {
+    color: #737373;
+  }
+
+  .dialog-close-icon:hover {
+    color: var(--primary-color);
+  }
+
+  /*Popup Help CSS Starts here || help-left positions left, help-right positions right, help-center positions center*/
+.help-left{
+  position: relative;
+  z-index: 0;
+  text-align: left;
+}
+
+.help-left:hover{
+  background-color: transparent;
+  z-index: 50;
+}
+
+.help-left span{
+  position: absolute;
+  background-color: #fff;
+  padding: 10px;
+  left: -1000px;
+  border: 3px solid var(--primary-color);
+  border-radius: 10px;
+  visibility: hidden;
+  color: #666;
+  text-decoration: none;
+  filter: alpha(Opacity=90);
+  opacity:.9;
+  box-shadow: 0px 0px 10px grey;
+  font-size: 13pt;
+  font-family: arial;
+}
+
+.help-left span img{
+  border-width: 0;
+  padding: 5px;
+}
+
+.help-left:hover span{
+  visibility: visible;
+  top: 0;
+  left: -300px;
+  transition-delay: .5s;
+}
+
+.help-right{
+  position: relative;
+  z-index: 0;
+  text-align: left;
+}
+
+.help-right:hover{
+  background-color: transparent;
+  z-index: 50;
+}
+
+.help-right span{
+  position: absolute;
+  background-color: #fff;
+  padding: 10px;
+  left: -1000px;
+  border: 3px solid var(--primary-color);
+  border-radius: 10px;
+  visibility: hidden;
+  color: #666;
+  text-decoration: none;
+  filter: alpha(Opacity=90);
+  opacity:.9;
+  box-shadow: 0px 0px 10px grey;
+  font-size: 13pt;
+  font-family: arial;
+}
+
+.help-right span img{
+  border-width: 0;
+  padding: 5px;
+}
+
+.help-right:hover span{
+  visibility: visible;
+  top: 0;
+  left: -40px;
+  transition-delay: .5s;
+}
+
+.help-center{
+  position: relative;
+  z-index: 0;
+  text-align: left;
+}
+
+.help-center:hover{
+  background-color: transparent;
+  z-index: 50;
+}
+
+.help-center span{
+  position: absolute;
+  background-color: #fff;
+  padding: 10px;
+  left: -1000px;
+  border: 3px solid var(--primary-color);
+  border-radius: 10px;
+  visibility: hidden;
+  color: #666;
+  text-decoration: none;
+  filter: alpha(Opacity=90);
+  opacity:.9;
+  box-shadow: 0px 0px 10px grey;
+  font-size: 13pt;
+  font-family: arial;
+}
+
+.help-center span img{
+  border-width: 0;
+  padding: 5px;
+}
+
+.help-center:hover span{
+  visibility: visible;
+  top: 0;
+  left: -160px;
+  transition-delay: .5s;
+}
+/*Popup Help CSS Ends here*/
+
+
+.help-icon {
+  font-size: 15pt;
+}
+
+.help-icon:hover {
+  cursor: pointer;
+
+  .help-circle-outter {
+      color: var(--primary-color);
+  }
+
+  .help-circle {
+    color: #ffffff;
+  }
+
+  .help-question-mark {
+    color: var(--primary-color);
+  }
+}
+
+.help-circle {
+  color: var(--primary-color);
+}
+
+.help-question-mark {
+    color: #ffffff;
+}
+
+.help-circle-outter {
+  color: #ffffff;
+}
+
+
+// Custom dialog style for the time out popup
+.custom-dialog-container-timeout .mat-dialog-container {
+  padding: 0 !important;
+}
+
+.no-results-found {
+  text-align:center; 
+  font-size: 2em; 
+  font-weight: 300; 
+  color: #808080;
+}
+  

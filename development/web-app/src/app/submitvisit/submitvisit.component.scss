@@ -1,0 +1,195 @@
+a {
+    text-decoration: none;
+    color: var(--primary-color-links);
+
+    &:hover {
+        color: var(--primary-color-links-hover);
+        font-weight: 500;
+    }
+}
+
+mat-card {
+    margin: 2em 2em;
+    border-left: 5px solid var(--primary-color);
+}
+
+mat-hint {
+    font-size: 8pt;
+}
+
+.mat-form-field {
+    margin-bottom: 1em;
+    width: 100%;
+    font-size: 10pt;
+}
+
+button {
+    margin-right: 1em;
+    margin-top: 2em;
+}
+
+.mat-error {
+    color: gray;
+}
+
+#stepLabel{
+    display: none;
+}
+
+.ssnField {
+    margin: 0;
+    padding: 0;
+}
+
+.noforn {
+    position: absolute;
+    left: 10px;
+    bottom: 40px;
+    font-size: 10pt;
+}
+
+table {
+    width: 100%;
+    font-size: 9pt;
+    border: 1px solid #e6e6e6;
+    text-align: left;
+    margin-top: 1em;
+    padding: 0;
+    
+}
+
+th {
+    border-bottom: 1px solid #e6e6e6;
+    padding: 1em;
+}
+
+td {
+    border-bottom: 1px solid #e6e6e6;
+    padding: 1em;
+    font-size: 10pt;
+}
+
+.deleteVisitor{
+    font-size: 12pt;
+    cursor: pointer;
+}
+
+.hero { //overriding hero class in global style.scss
+    padding: 0 0;
+}
+
+
+.addVisitor {
+    display: flex;
+    a {
+        color: var(--primary-color);
+        cursor: pointer;
+    }
+}
+
+.visitorTable {
+    margin: auto;
+    width: 80%;
+    padding: 10px;
+    border: none;
+        
+    thead {
+        border: red solid 1px;
+        }
+}
+
+.review {
+    text-align: left;
+    font-family: "Montserrat", Arial, Helvetica, sans-serif;
+    background: #f2f2f2;
+    
+    h5 {
+        padding: 0;
+        margin: 0;
+        text-indent: 20px;
+    } 
+    span {
+        color: #666666;
+        font-weight: normal;
+        padding-left: 10px;
+        //font-weight: bold;
+    }
+}
+
+
+.editForm {
+    padding-left: 10px;
+    cursor: pointer;
+    font-size: .8em;
+    color: var(--primary-color-links);
+
+    &:hover {
+        color: var(--primary-color-links-hover);
+    }
+}
+
+.welcomeMsg {
+    text-align: center;
+    margin: auto;
+    padding-top: 1em;
+    width: 80%;
+}
+
+.moreLess {
+    color: var(--primary-color-links);
+    cursor: pointer;
+    font-size: 8pt;
+    padding-left: 5px;
+
+    &:hover {
+        color: var(--primary-color-links-hover);
+    }
+}
+
+// .moreLess:hover {
+//     color: #004080;
+//     font-size: 1em;
+// }
+
+.confirmationMsg {
+    border-radius: 15px;
+    border: 1px solid #cccccc;
+    margin: 2em 6em;
+    padding: 1em;
+    color: #737373;
+}
+
+//Begin media screen size
+@media only screen and (min-width: 650px) {
+
+    .mat-form-field {
+        width: 100%;
+      }
+        
+    #stepLabel {
+        display: inline;
+        font-size: 10pt;
+    }
+
+}
+//End media screen size
+
+.profile-name { 
+    display:table-cell; 
+    vertical-align:middle; 
+    //width:280px; 
+    padding-bottom: 20px; 
+    font-size: 1.5em;
+    color: #666666;
+}
+
+.cancelNotification {
+    margin-right: 1em;
+    font-size: .7em;
+}
+
+.mainContent {
+    padding-bottom: 1em;
+}
+
+

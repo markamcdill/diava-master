@@ -1,0 +1,366 @@
+<h2 mat-dialog-title style="border-bottom: 1px solid #ccc;"><i class="fas fa-file-alt"></i> Visit Notification Details</h2>
+<mat-dialog-content class="mat-typography">
+
+  <mat-card *ngIf="visitData.on_behalf === 'Yes'" style="background: #f0f3ff;">
+    <div style="display: flex;">
+      <i class="fas fa-exclamation-circle fa-2x icon-color"></i>
+      <p style="font-size: 9pt; margin-left: 20px;">
+         This visit notification was submitted by <strong>{{visitData.visit_submitted_by}}</strong> on behalf of
+        <strong>{{visitData.traveler_rank_grade}}&nbsp;{{visitData.traveler_fname}}&nbsp;{{visitData.traveler_lname}}</strong>
+      <p>
+    </div>
+  </mat-card>
+
+  <form [formGroup]="formTemplate">
+    <mat-card class="record-data">
+      <h3>Record Details</h3>
+      <div id="formSection" style="padding-bottom: 1em;">
+        <h5>Record Classification: <span>{{visitData.visit_classification_full}}</span></h5>
+        <h5>Record ID: <span>{{visitData.visit_id}}</span></h5>
+        <h5>Destination: <span>{{visitData.location_name}}</span></h5>
+        <h5>Visit Submitted On: <span>{{this.visit_create_date_display}}</span></h5>
+        <h5>Last Modified: <span>{{this.visit_modify_date_display}}</span></h5>
+        <h5>Visit Submitted By: <span>{{visitData.visit_submitted_by}}</span></h5>
+      </div>
+    </mat-card>
+
+    <mat-card class="record-data">
+      
+    <h3>Visit Classification</h3>
+    <div id="formSection">
+      <mat-grid-list cols="2" rowHeight="80px">
+        <mat-grid-tile>
+          <mat-form-field appearance="fill">
+            <mat-label>Classification</mat-label>
+            <mat-select formControlName="visit_classification" [(ngModel)]="visitData.visit_classification" (selectionChange)="setNoforn()" required>
+              <mat-option value="UNCLASSIFIED">UNCLASSIFIED</mat-option>
+              <mat-option value="CONFIDENTIAL">CONFIDENTIAL</mat-option>
+              <mat-option value="SECRET">SECRET</mat-option>
+              <mat-option value="TOP SECRET">TOP SECRET</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+          <mat-checkbox formControlName="visit_classification_dissem" class="noforn" (change)="setVisitClassificationDisplay()" [(ngModel)]="visitData.visit_classification_dissem">NOFORN</mat-checkbox>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+
+
+    <h3>Visitor Information</h3>
+    <div id="formSection">
+    <mat-form-field appearance="fill">
+      <mat-label>First Name</mat-label>
+        <input matInput formControlName="traveler_fname" [(ngModel)]="visitData.traveler_fname" required/>
+        <mat-error *ngIf="formTemplate.controls['traveler_fname'].hasError('required')">
+          <h5>Please provide a first name</h5>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Middle Initial</mat-label>
+        <input matInput formControlName="traveler_m_initial" [(ngModel)]="visitData.traveler_m_initial"/>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Last Name</mat-label>
+        <input matInput formControlName="traveler_lname" [(ngModel)]="visitData.traveler_lname" required/>
+        <mat-error *ngIf="formTemplate.controls['traveler_lname'].hasError('required')">
+          <h5>Please provide a last name</h5>
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" style="margin-bottom: 20px;">
+      <mat-label>Social Security Number</mat-label>
+      <input matInput [type]="ssnHide ? 'password' : 'text'" formControlName="traveler_ssn" required>
+      <button class="ssnField" mat-icon-button matSuffix (click)="ssnHide = !ssnHide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="ssnHide">
+        <mat-icon>{{ssnHide ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
+      <mat-error *ngIf="formTemplate.controls['traveler_ssn'].hasError('required')">
+        Enter traveler's social security number
+        <span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span>
+      </mat-error>
+      <mat-error *ngIf="formTemplate.controls['traveler_ssn'].hasError('pattern')">
+        Enter traveler's social security number with the following format = xxx-xx-xxxx
+        <span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span>
+      </mat-error>
+      <mat-hint>Social Security format = xxx-xx-xxxx
+        <span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span>
+      </mat-hint>
+    </mat-form-field>
+
+
+    <mat-form-field appearance="fill">
+      <mat-label>Records Protect?</mat-label>
+      <mat-select formControlName="traveler_rp" matNativeControl [(ngModel)]="visitData.traveler_rp" required>
+        <mat-option value="no">No</mat-option>
+        <mat-option value="yes">Yes</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Rank/Grade</mat-label>
+      <input matInput formControlName="traveler_rank_grade" [(ngModel)]="visitData.traveler_rank_grade" required/>
+      <mat-error *ngIf="formTemplate.controls['traveler_rank_grade'].hasError('required')">
+        <h5>Please provide a rank/grade</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Phone Cell</mat-label>
+      <input matInput formControlName="traveler_phone_cell" [(ngModel)]="visitData.traveler_phone_cell" required/>
+      <mat-error *ngIf="formTemplate.controls['traveler_phone_cell'].hasError('required')">
+        <h5>Please provide a cell (mobile) phone number</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Phone VoIP</mat-label>
+      <input matInput formControlName="traveler_phone_nsts" [(ngModel)]="visitData.traveler_phone_nsts"/>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email JWICS</mat-label>
+      <input matInput formControlName="traveler_email_jwics" [(ngModel)]="visitData.traveler_email_jwics" required/>
+      <mat-error *ngIf="formTemplate.controls['traveler_email_jwics'].hasError('required')">
+        <h5>Please provide a JWICS email</h5>
+      </mat-error>
+      <mat-error *ngIf="formTemplate.controls['traveler_email_jwics'].hasError('email')">
+        <h5>Enter a valid email address</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Email Unclass</mat-label>
+      <input matInput formControlName="traveler_email_niprnet" [(ngModel)]="visitData.traveler_email_niprnet" required/>
+      <mat-error *ngIf="formTemplate.controls['traveler_email_niprnet'].hasError('email')">
+        <h5>Enter a valid email address</h5>
+      </mat-error>
+    </mat-form-field>
+    </div>
+
+    <h3>Clearance Information</h3>
+    <div id="formSection">
+      <mat-form-field appearance="fill">
+        <mat-label>Clearance MSG DTG:</mat-label>
+        <input matInput formControlName="visit_clearance_msg_dtg" [(ngModel)]="visitData.visit_clearance_msg_dtg">
+        <mat-error *ngIf="formTemplate.controls['visit_clearance_msg_dtg'].hasError('pattern')">
+          The Clearance MSG DTG must be in a valid format. (e.g. 081840Zmar2010 - day, ZULU Time, month, year 
+        </mat-error>
+        <mat-hint>
+          The Clearance MSG DTG must be in a valid format. (e.g. 081840Zmar2010 - day, ZULU Time, month, year 
+        </mat-hint>
+      </mat-form-field>
+    </div>
+
+    <h3>Office Visit Information</h3>
+    <div id="formSection">
+    <div style="display: flex;">
+      <div style="width: 30%;">
+        <mat-form-field appearance="fill">
+          <mat-label>Arrival Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="visit_start_dt" [(ngModel)]="visitData.visit_start_dt" disabled required>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker disabled="false"></mat-datepicker>
+          <mat-error *ngIf="formTemplate.controls['visit_start_dt'].hasError('required')">
+            Select arrival date 
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div style="width: 70%;margin-left: 10px;">
+        <mat-form-field appearance="fill">
+          <mat-label>Time of Arrival (Zulu)</mat-label>
+          <input matInput formControlName="visit_start_time" required>
+          <mat-error *ngIf="formTemplate.controls['visit_start_time'].hasError('required')">
+            Arrival time must be a valid 24 hour time format (e.g. 0900 or 2300)
+          </mat-error>
+          <mat-hint>Arrival time must be a valid 24 hour time format (e.g. 0900 or 2300)</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div style="display: flex; margin-bottom: 20px;">
+      <div style="width: 30%;">
+        <mat-form-field appearance="fill">
+          <mat-label>Departure Date</mat-label>
+          <input matInput [matDatepicker]="picker2" formControlName="visit_end_dt" [(ngModel)]="visitData.visit_end_dt" disabled required>
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2 disabled="false"></mat-datepicker>
+          <mat-error *ngIf="formTemplate.controls['visit_end_dt'].hasError('required')">
+            Select departure date 
+          </mat-error>
+          <mat-error *ngIf="formTemplate.controls['visit_end_dt'].hasError('dateCompare')">
+            Departure Date must be greater than the Arrival Date  
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div style="width: 70%;margin-left: 10px;">
+        <mat-form-field appearance="fill">
+          <mat-label>Time of Departure (Zulu)</mat-label>
+          <input matInput formControlName="visit_end_time" required>
+          <mat-error *ngIf="formTemplate.controls['visit_end_time'].hasError('required')">
+            Departure time must be a valid 24 hour time format (e.g. 0900)
+          </mat-error>
+          <mat-hint>Departure time must be a valid 24 hour time format (e.g. 2300)</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+
+
+    <mat-form-field appearance="fill">
+      <mat-label>Office Name</mat-label>
+      <input matInput formControlName="visit_office_name" [(ngModel)]="visitData.visit_office_name" required/>
+      <mat-error *ngIf="formTemplate.controls['visit_office_name'].hasError('required')">
+        <h5>Please provide an office name</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Office City</mat-label>
+      <input matInput formControlName="visit_office_city" [(ngModel)]="visitData.visit_office_city"/>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Office Country</mat-label>
+      <input matInput formControlName="visit_office_country" [(ngModel)]="visitData.visit_office_country"/>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Point of Contact</mat-label>
+      <input matInput formControlName="visit_fname" [(ngModel)]="visitData.visit_fname" required/>
+      <mat-error *ngIf="formTemplate.controls['visit_fname'].hasError('required')">
+        <h5>Please provide a point of contact</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Point of Contact Email</mat-label>
+      <input matInput formControlName="visit_email" [(ngModel)]="visitData.visit_email" required/>
+      <mat-error *ngIf="formTemplate.controls['visit_email'].hasError('required')">
+        <h5>Please provide a point of contact email</h5>
+      </mat-error>
+      <mat-error *ngIf="formTemplate.controls['visit_email'].hasError('email')">
+        <h5>Please provide a valid email address</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Name of Lodging</mat-label>
+      <input matInput formControlName="visit_lodging_name" [(ngModel)]="visitData.visit_lodging_name" required/>
+      <mat-error *ngIf="formTemplate.controls['visit_lodging_name'].hasError('required')">
+        <h5>Please provide the name of the lodge</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Lodging Address</mat-label>
+      <input matInput formControlName="visit_lodging_street" [(ngModel)]="visitData.visit_lodging_street" required/>
+      <mat-error *ngIf="formTemplate.controls['visit_lodging_street'].hasError('required')">
+        <h5>Please provide the lodging address</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Lodging State</mat-label>
+      <input matInput formControlName="visit_lodging_state" [(ngModel)]="visitData.visit_lodging_state" required/>
+      <mat-error *ngIf="formTemplate.controls['visit_lodging_state'].hasError('required')">
+        <h5>Please provide the lodging state</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Lodging Phone</mat-label>
+      <input matInput formControlName="visit_lodging_phone" [(ngModel)]="visitData.visit_lodging_phone" required/>
+      <mat-error *ngIf="formTemplate.controls['visit_lodging_phone'].hasError('required')">
+        <h5>Please provide the lodging phone number</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Purpose of Visit</mat-label>
+      <textarea matInput formControlName="visit_purpose" [(ngModel)]="visitData.visit_purpose" required></textarea>
+      <mat-error *ngIf="formTemplate.controls['visit_purpose'].hasError('required')">
+        <h5>Please provide the purpose of this visit</h5>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Additional Offices</mat-label>
+      <textarea matInput formControlName="visit_additional_offices" [(ngModel)]="visitData.visit_additional_offices"></textarea>
+      <mat-hint>
+        Enter additional offices that you will be visiting during this visit. Please include office name, POC and time/date of visit.      
+      </mat-hint>
+    </mat-form-field>
+    </div>
+
+    <h3>
+      Additional Travelers
+      <!-- Begin help popup -->
+      <span class="fa-layers fa-fw help-icon help-center">
+        <i class="fas fa-circle help-circle" data-fa-transform="grow-3"></i>
+        <i class="fas fa-circle help-circle-outter" data-fa-transform="grow-2"></i>
+        <i class="fas fa-circle help-circle"></i>
+        <i class="fa-inverse fas fa-question help-question-mark" data-fa-transform="shrink-6"></i>
+        <span style="width: 350px;">
+            <div>
+                <h2>Additional Travelers</h2>
+                <p>
+                  Additional travelers are those that will be accompanying you during this visit. Click the blue "Add Traveler" button to add travelers.
+                </p>
+            </div>
+        </span>
+      </span>
+      <!-- End help popup -->
+      <span class="privacy-statement" style="font-weight: 400;" (click)="openPAS()">Privacy Act Statement</span>
+    </h3>
+    
+      <div style="margin-left: 20px; padding-bottom: 1.5em;">
+        <table class="additional-travelers">
+          <tr *ngIf="VisitorList.length > 0">
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Rank</th>
+            <th>SSN</th>
+            <th>Record Protect?</th>
+            <th style="padding: 0px;" colspan="2">              
+              <button mat-button (click)="addVisitor()" title="Add Traveler" style="cursor: pointer; margin-top: 0; margin-right: 0;">
+                Add Traveler <i class="fas fa-user-plus" style="padding-bottom: 4px;"></i>
+              </button>
+            </th>
+          </tr>
+
+          <tr *ngIf="VisitorList.length == 0">
+            <td style="text-align: center;margin-top: 25px;" colspan="6">
+              <h3>No Additional Travelers</h3>
+              <button *ngIf="this.editMode" mat-button (click)="addVisitor()" title="Add Traveler" style="cursor: pointer; margin-top: 0; margin-right: 0;">
+                Add Traveler <i class="fas fa-user-plus" style="padding-bottom: 4px;"></i>
+              </button>
+            </td>
+          </tr> 
+          <tr *ngFor="let Visitor of VisitorList">
+            <td>{{Visitor.add_visitor_fname}}</td>
+            <td>{{Visitor.add_visitor_lname}}</td>
+            <td>{{Visitor.add_visitor_rank_grade}}</td>
+            <td>XXX-XX-{{Visitor.add_visitor_ssn | slice:-4}}</td>
+            <td>{{Visitor.add_visitor_rp}}</td>
+            <td style="width: 2%;">
+              <span (click)="editVisitor(Visitor.ID)">
+                <i class="fas fa-pen" title="Edit Traveler" style="cursor: pointer;"></i>
+              </span>
+            </td>
+            <td style="width: 2%;">
+              <span (click)="deleteVisitor(Visitor.ID)">
+                <i class="far fa-trash-alt" title="Delete Traveler" style="cursor: pointer;"></i>
+              </span>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </mat-card>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close (click)="cancel()">Cancel</button>
+  <button mat-button (click)="submit()">Update</button>
+</mat-dialog-actions>

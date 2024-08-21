@@ -1,0 +1,205 @@
+<div class="pageTitle">Manage Users</div>
+<div class="content-container">
+    <mat-card>
+        <mat-card-content>
+            <mat-form-field class="filter-cta">
+              <mat-label>Filter by name</mat-label>
+              <input matInput (keyup)="applyFilter($event)" #input>
+              <mat-hint>
+                Filter by name those users that are logged and registered in DIAVA (this is not a global JWICS search).
+              </mat-hint>
+            </mat-form-field>
+
+            <div class="mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource" matSort>
+            
+                <!-- Column User Name  -->
+                <ng-container matColumnDef="user_cn">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                  <td mat-cell *matCellDef="let row"> {{row.user_cn}}</td>
+                </ng-container>
+
+                <!-- Column Location Name  -->
+                <ng-container matColumnDef="location_name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Location </th>
+                  <td mat-cell *matCellDef="let row" class="{{row.location_class}}"> {{row.location_name}} <span class="disabled" *ngIf="row.location_class == 'disabled'"> (disabled)</span>  </td>
+                </ng-container>
+
+                <!-- Column User Role  -->
+                <ng-container matColumnDef="user_role">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Role </th>
+                  <td mat-cell *matCellDef="let row" > <span style="position: relative;">{{row.user_role}}<span style="position: absolute; top: -5px; right: -6px; cursor: pointer; color: red; font-size: 12pt;" *ngIf="row.adminAt" matTooltip="Acting as administrator at {{row.location_name}}">@</span></span></td>
+                  <!-- <td mat-cell *matCellDef="let row" > 
+                    <span *ngIf="row.adminAt" matBadge="@" matBadgeColor="warn" matBadgeSize="medium" style="cursor: pointer;" matTooltip="Acting as administrator at {{row.location_name}}">{{row.user_role}}</span>
+                    <span *ngIf="!row.adminAt">{{row.user_role}}</span>
+                  </td> -->
+                </ng-container>
+
+                <!-- Column Last Active  -->
+                <ng-container matColumnDef="last_active">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Last Active </th>
+                  <td mat-cell *matCellDef="let row"> <span matTooltip="User has been inactive for over {{years}} years" *ngIf="(now - row.last_active_milli) > expireValue" style="color: #c20909; cursor: pointer;">{{row.last_active | date : "YYYY-MM-dd:HH:MM"}} </span><span *ngIf="(now - row.last_active_milli) <= expireValue">{{row.last_active | date : "YYYY-MM-dd:HH:MM"}} </span></td>
+                </ng-container>
+
+                <!-- Column edit -->
+                <ng-container matColumnDef="edit">
+                  <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
+                  <td align="right" id="editData" mat-cell *matCellDef="let row"> <span matTooltip="Edit User" (click)="updateUser(row)"><i class="fas fa-user-edit"></i></span></td>
+                </ng-container>
+
+                <!-- Column delete -->
+                <ng-container matColumnDef="delete">
+                  <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
+                  <td align="left" id="deleteData" mat-cell *matCellDef="let row"> 
+                    <span *ngIf="row.user_cn != curUser.user_cn" matTooltip="Delete User" (click)="deleteUser(row,'view')"><i class="far fa-trash-alt"></i></span>
+                    <span class="disabled" *ngIf="row.user_cn == curUser.user_cn" matTooltip="Cannot delete yourself"><i class="far fa-trash-alt" style="cursor: not-allowed;"></i></span>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            
+                <!-- Row shown when there is no matching data. -->
+                <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4" class="no-results-found">No results found for '{{input.value}}'</td>
+                </tr>
+              </table>
+            
+              <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons id="paginator"></mat-paginator>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
+
+<!-- Begin Dialog/Modal Edit User -->
+<ng-template #nodeDialog>
+  <h2 *ngIf="!this.soleMaintainerMsg" mat-dialog-title>Edit {{user.user_cn}}</h2>
+  <h2 *ngIf="this.soleMaintainerMsg" mat-dialog-title><i class="fas fa-user-times" style="margin-right: 5px;"></i>User Role Cannot be Modified</h2>
+  <form [formGroup]="_editUser" (submit)="onSubmit()">
+    <div *ngIf="this.soleMaintainerMsg" style="width: 400px;">
+      <h5>This is the only account with 'maintainer' privileges; assign maintainer privileges to another account to remove privileges from this account</h5>
+    </div>
+    <p>{{user.user_cn}}</p>
+    <mat-form-field appearance="fill">
+      <mat-label>User Role</mat-label>
+      <select #userRoleSelect matNativeControl [(ngModel)]="editUser.user_role" formControlName="user_role" name="user_role" (change)="configForm($event)">
+        <option value="read-only">read-only</option>
+        <option value="administrator">administrator</option>
+        <option value="maintainer">maintainer</option>
+      </select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label #locationLabel>Location Assigned</mat-label>
+        <mat-select  #locationSelect formControlName="location_id" [(ngModel)]="editUser.location_id" formControlName="location_id" name="location_id">
+          <ng-container *ngFor="let location of locations">
+            <mat-option value="{{location.location_id}}">{{location.location_name}} 
+              <span *ngIf="location.location_active == 'no'">(Inactive)</span>
+            </mat-option>
+          </ng-container>
+        </mat-select>
+        <mat-error *ngIf="_editUser.controls['location_id'].hasError('required')">
+          Location is required
+        </mat-error>
+    </mat-form-field>
+
+    <mat-dialog-content *ngIf="this.showUserEmailJwics">
+      <mat-form-field appearance="fill">
+        <mat-label>JWICS Email</mat-label>
+        <input matInput formControlName="user_email_jwics" name="user_email_jwics" [(ngModel)]="editUser.user_email_jwics" value="{{editUser.user_email_jwics}}"/>
+        <mat-error *ngIf="_editUser.controls['user_email_jwics'].hasError('required')">
+          JWICS Email is required
+        </mat-error>
+        <mat-error *ngIf="_editUser.controls['user_email_jwics'].hasError('email')">
+          Not a Valid Email
+        </mat-error>
+      </mat-form-field>
+    </mat-dialog-content>
+
+
+    <mat-dialog-content class="mat-typography" style="padding-bottom: 1em;" *ngIf="this.showAdminAt"> 
+      <mat-checkbox (change)="tglAdminAt()" [checked]="this.adminAt"></mat-checkbox>{{this.adminAtMsg}}
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-stroked-button mat-dialog-close>Cancel</button>
+      <button mat-button type="submit">Save</button>
+    </mat-dialog-actions>
+  
+  </form>
+</ng-template>
+<!-- End Dialog/Modal Edit User -->
+
+
+
+<!-- Begin No Locations Dialog/Modal -->
+<ng-template #noLocationsDialog>
+  <div style="width: 450px;">
+    <h2 mat-dialog-title><i class="fas fa-user-lock" style="margin-right: 5px;"></i>User cannot be modified</h2>
+    <mat-dialog-content class="mat-typography">
+      No locations have been registered with the system.
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button [mat-dialog-close]="true">Got It <i style="padding-bottom: 5px;" class="fas fa-thumbs-up"></i></button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
+<!-- End No Locations Dialog/Modal -->
+
+
+<!-- Begin Dialog/Modal Delete User -->
+<ng-template #delNodeDialog>
+  <div *ngIf="!this.soleMaintainerMsg" style="width: 450px;">
+    <h2 mat-dialog-title><i class="fas fa-user-times" style="margin-right: 5px;"></i>Delete Confirmation</h2>
+
+    <mat-dialog-content class="mat-typography" style="padding-bottom: 1em;">
+      Are you sure you want to delete <strong>{{user.user_cn}}?</strong>
+    </mat-dialog-content>
+
+      <mat-dialog-actions align="end">
+        <button mat-stroked-button mat-dialog-close>Cancel</button>
+        <button mat-button type="submit" (click)="deleteUser(user,'delete')">Yes, Delete</button>
+      </mat-dialog-actions>
+  </div>
+  <div *ngIf="this.soleMaintainerMsg" style="width: 450px;">
+    <h2 mat-dialog-title><i class="fas fa-user-times" style="margin-right: 5px;"></i>User Cannot be Deleted</h2>
+
+    <mat-dialog-content class="mat-typography" style="padding-bottom: 1em;">
+      <strong>{{user.user_cn}} </strong>is the only account with maintainer privileges; assign maintainer privileges to another account, then delete this account
+    </mat-dialog-content>
+
+      <mat-dialog-actions align="end">
+        <button mat-button [mat-dialog-close]="true">Got It <i style="padding-bottom: 5px;" class="fas fa-thumbs-up"></i></button>
+      </mat-dialog-actions>
+  </div>
+</ng-template>
+<!-- End Dialog/Modal Delete User -->
+
+<!-- Begin Admin Dialog/Modal Delete User -->
+<ng-template #adminDelNodeDialog>
+  <div style="width: 450px;">
+    <h2 mat-dialog-title><i class="fas fa-hand-paper" style="margin-right: 5px;"></i>User cannot be deleted</h2>  
+    <mat-dialog-content class="mat-typography">
+      Cannot Delete {{user.user_cn}} becuase this user is an adminstrator. Administrators cannot be deleted; user must be placed in the read-only role to be deleted.
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button [mat-dialog-close]="true">Will Do <i style="padding-bottom: 5px;" class="fas fa-thumbs-up"></i></button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
+<!-- End AdminDialog/Modal Delete User -->
+
+<!-- Begin Sole Admin Dialog/Modal -->
+<ng-template #soleAdminNodeDialog>
+  <div style="width: 450px;">
+    <h2 mat-dialog-title><i class="fas fa-user-lock" style="margin-right: 5px;"></i>User cannot be modified</h2>
+    <mat-dialog-content class="mat-typography">
+      This account is locked because {{user.user_cn}} is the only adminstartor assigned to {{user.location_name}}. To unlock
+      this account, another user must be designated as an adminstrator for {{user.location_name}}.
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button [mat-dialog-close]="true">Got It <i style="padding-bottom: 5px;" class="fas fa-thumbs-up"></i></button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
+<!-- End Sole Admin Dialog/Modal -->

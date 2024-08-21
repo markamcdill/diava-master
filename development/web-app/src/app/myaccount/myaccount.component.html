@@ -1,0 +1,116 @@
+<div class="pageTitle"> My Account</div>
+
+<div class="card">
+    <mat-card>
+        <mat-card-content>
+          <div class="profile">
+            <div class="profile-name"> 
+              {{user.user_cn}}
+              <!-- Begin help popup -->
+              <span class="fa-layers fa-fw help-icon help-center">
+                <i class="fas fa-circle help-circle" data-fa-transform="grow-3"></i>
+                <i class="fas fa-circle help-circle-outter" data-fa-transform="grow-2"></i>
+                <i class="fas fa-circle help-circle"></i>
+                <i class="fa-inverse fas fa-question help-question-mark" data-fa-transform="shrink-6"></i>
+                <span style="width: 350px;">
+                    <div>
+                        <p>
+                          Your name is pulled from your PKI. Contact the PKI support if it's incorrect.
+                        </p>
+                    </div>
+                </span>
+              </span>
+      <!-- End help popup -->
+
+            </div>
+          </div>
+          <form [formGroup]="myAccountForm">
+              <mat-form-field appearance="fill">
+                <mat-label>Records Protect? Select</mat-label>
+                <mat-select formControlName="user_rp" [(ngModel)]="user.user_rp" required>
+                  <mat-option value="no">No</mat-option>
+                  <mat-option value="yes">Yes</mat-option>
+                </mat-select>
+                <mat-hint>Select NO, if you're not familiar with Records Protect (RP).</mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Rank/Grade</mat-label>
+                <input [(ngModel)]="user.user_rank_grade" matInput formControlName="user_rank_grade" required>
+                <mat-error *ngIf="myAccountForm.controls['user_rank_grade'].hasError('required')">
+                  Enter your rank or grade (CTR Contractor)
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Social Security Number</mat-label>
+                <input matInput [type]="ssnHide ? 'password' : 'text'" [(ngModel)]="user.user_ssn" formControlName="user_ssn" required>
+                <button class="ssnField" mat-icon-button matSuffix (click)="ssnHide = !ssnHide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="ssnHide">
+                  <mat-icon>{{ssnHide ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+                <mat-error *ngIf="myAccountForm.controls['user_ssn'].hasError('required')">
+                  Enter your social security number (format = xxx-xx-xxxx)
+                  <span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span>
+                </mat-error>
+                <mat-hint>Social Security format = xxx-xx-xxxx
+                  <span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span>
+                </mat-hint>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>CAC Number</mat-label>
+                <input matInput formControlName="user_cac" [(ngModel)]="user.user_cac">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Date of Birth</mat-label>
+                <input matInput [matDatepicker]="pickerDOB" formControlName="user_dob" [(ngModel)]="user.user_dob">
+                <mat-datepicker-toggle matSuffix [for]="pickerDOB"></mat-datepicker-toggle>
+                <mat-datepicker #pickerDOB></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Organization</mat-label>
+                <input matInput formControlName="user_org" [(ngModel)]="user.user_org" required>
+                <mat-error *ngIf="myAccountForm.controls['user_org'].hasError('required')">
+                  Enter your organization 
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Phone Cell</mat-label>
+                <input matInput formControlName="user_phone_cell" [(ngModel)]="user.user_phone_cell" required>
+                <mat-error *ngIf="myAccountForm.controls['user_phone_cell'].hasError('required')">
+                  Enter your cell phone number 
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Phone Unclass</mat-label>
+                <input matInput formControlName="user_phone_comm" [(ngModel)]="user.user_phone_comm" required>
+                <mat-error *ngIf="myAccountForm.controls['user_phone_comm'].hasError('required')">
+                  Enter your Unclass phone number 
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Phone VoIP</mat-label>
+                <input matInput formControlName="user_phone_nsts" [(ngModel)]="user.user_phone_nsts">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Email JWICS</mat-label>
+                <input matInput formControlName="user_email_jwics" [(ngModel)]="user.user_email_jwics" required>
+                <mat-error *ngIf="myAccountForm.controls['user_email_jwics'].hasError('required')">
+                  Enter your JWICS email 
+                </mat-error>
+                <mat-error *ngIf="myAccountForm.controls['user_email_jwics'].hasError('email')">
+                  Enter a valid email address 
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Email Unclass</mat-label>
+                <input matInput formControlName="user_email_niprnet" [(ngModel)]="user.user_email_niprnet" required>
+                <mat-error *ngIf="myAccountForm.controls['user_email_niprnet'].hasError('email')">
+                  Enter a valid email address 
+                </mat-error>
+              </mat-form-field>
+              <div class="buttonAlignRight">
+                <button class="button-custom" mat-stroked-button [routerLink]="['/home']">Cancel</button>
+                <button mat-button type="submit" (click)="submit()">Save</button>
+              </div>
+          </form>
+        </mat-card-content>
+    </mat-card>
+</div>

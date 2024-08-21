@@ -1,0 +1,218 @@
+<div class="pageTitle">Manage <span *ngIf="curUser.user_role=='administrator'">{{curUser.location_name}}</span> Administrators</div>
+
+<div>
+    <mat-card>
+        <mat-card-content>
+          <div style="margin-bottom: 1em;"> 
+            <button mat-raised-button style="color: #737373;" (click)="addAdmin()"><span class="material-icons" style="padding-right: .5em; color: var(--primary-color);">add_circle</span>Add Administrator</button>
+          </div>
+            <div class="mat-elevation-z8">
+              <table mat-table [dataSource]="dataSource" matSort>
+            
+                <!-- Column User Name  -->
+                <ng-container matColumnDef="user_cn">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                  <td mat-cell *matCellDef="let row"> {{row.user_cn}} </td>
+                </ng-container>
+
+                <!-- Column Location Name  -->
+                <ng-container matColumnDef="location_name">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Location </th>
+                  <td mat-cell *matCellDef="let row" class="{{row.location_class}}"> {{row.location_name}} <span class="disabled" *ngIf="row.location_class == 'disabled'"> (disabled)</span>  </td>
+                </ng-container>
+
+                <!-- Column User Role  -->
+                <ng-container matColumnDef="user_role">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header> Role </th>
+                  <td mat-cell *matCellDef="let row"> {{row.user_role}} </td>
+                </ng-container>
+
+                <!-- Column Remove User -->
+                <ng-container matColumnDef="remove_user">
+                  <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
+                  <td id="remove-user" mat-cell *matCellDef="let row"> <span matTooltip="Remove User" (click)="removeAdmin(row,'view')"><i class="fas fa-user-times"></i></span></td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            
+              </table>
+            
+              <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
+
+<!-- Begin Dialog/Modal Add Admin -->
+<ng-template #nodeDialog>
+  <div class="add-admin-dialog-container">
+    <div class="add-admin-dialog-title">Add Administrator</div>
+    <div class="add-admin-dialog-tip">
+      This is not a global search. Only users that have accessed DiAVA will be available in this system. 
+      If user is not found, have them access DiAVA so the system captures their PKI and try search again. 
+    </div>
+    <div mat-dialog-content>
+      
+      <mat-form-field class="filter-cta">
+        <mat-label>Search</mat-label>
+        <input matInput (keyup)="applyFilter($event)" #input>
+        <mat-hint>Search for user name to add as administrator</mat-hint>
+      </mat-form-field>
+
+      <div style="margin-bottom: 2em;" *ngIf="shwSrchRes" class="mat-elevation-z8">
+        <table mat-table [dataSource]="srchDataSource" matSort>
+      
+          <!-- Column User Name  -->
+          <ng-container matColumnDef="user_cn">
+            <td class="rowSelectName" mat-cell *matCellDef="let row" (click)="mkAdmin(row)"> {{row.user_cn}} </td>
+          </ng-container>
+
+          <tr mat-row *matRowDef="let row; columns: addAdminDisplayedColumns;"></tr>
+      
+          <!-- Row shown when there is no matching data. --> 
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4" class="no-results-found">No results found for '{{input.value}}'<p class="mat-typography">Have this individual access the site to register their PKI with DiAVA</p></td>
+          </tr>
+        </table>
+      </div> 
+    </div>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close (click)="cancel()">Cancel</button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
+<!-- End Dialog/Modal Edit User -->
+
+<!-- Begin Make Admin Dialog -->
+<ng-template #mkAdminDialog>
+    <!-- 
+      candidate adminisitrator (candidateAdmin): the selected user after search
+      current user (curUser): the user currently selecting candidate users 
+
+      NOTE: candidateAdmin MUST be in read-only status
+
+      if the candidate user is the sole admin at a location -- account locked (no actions available)
+
+      if curUser is an administrator
+        candidateAdmin will be made an admin at the curUser's location
+      else (curUser is a maintainer)
+        candidateAdmin can be made an admin at a selected location
+
+      Remove
+        from admin status to read-only with no location
+    -->
+
+  <div style="width: 450px;" *ngIf="soleAdmin==true;else setAdminTemplate">
+    <div mat-dialog-title><i class="fas fa-user-lock" style="margin-right: 5px;"></i>User cannot be modified</div>
+    <mat-dialog-content class="mat-typography">
+      This account is locked because '{{candidateAdmin.user_cn}}' is the <strong>only</strong> administrator assigned to {{candidateAdmin.location_name}}. To unlock
+      this account, another user must be designated as an adminstrator for {{candidateAdmin.location_name}}.
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button [mat-dialog-close]="true" (click)="soleAdmin=false; cancel()">Got It <i style="padding-bottom: 5px;" class="fas fa-thumbs-up"></i></button>
+    </mat-dialog-actions>
+  </div>
+
+
+</ng-template>
+<!-- End Make Admin Dialog -->
+
+<ng-template #notReadOnlyDialogue>
+
+  <div style="width: 450px;">
+    <div mat-dialog-title><i class="fas fa-user-lock" style="margin-right: 5px;"></i>User cannot be an administrator</div>
+    <mat-dialog-content class="mat-typography">
+      '{{this.candidateAdmin.user_cn}}' is not a candidate for administrator privileges; only accounts in 'read-only' status may become administrators.  Contact this user and instruct them to modify their user-role to 'read-only'.
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button [mat-dialog-close]="true">Got It <i style="padding-bottom: 5px;" class="fas fa-thumbs-up"></i></button>
+    </mat-dialog-actions>
+  </div>
+</ng-template>
+
+<ng-template #setAdminTemplate>
+  <h3 style="text-align: center; font-weight: bold;">{{this.nameParts.first_name}} {{this.nameParts.last_name}} {{this.nameParts.d_number}}</h3>
+    <form [formGroup]="_mkAdmin" (submit)="setAdmin()">
+      <mat-dialog-content *ngIf="curUser.user_role=='maintainer'" class="mat-typography">
+        Set this user's role to 'administrator' for    
+        <mat-form-field appearance="fill">
+            <mat-select formControlName="location_id" [(ngModel)]="candidateAdmin.location_id" name="location_id">
+              <ng-container *ngFor="let location of locations">
+                <mat-option value="{{location.location_id}}">{{location.location_name}} 
+                  <span *ngIf="location.location_active == 'no'">(Inactive)</span>
+                </mat-option>
+              </ng-container>
+            </mat-select>
+            <mat-error *ngIf="_mkAdmin.controls['location_id'].hasError('required')">
+              Location is required
+            </mat-error>
+        </mat-form-field>
+      </mat-dialog-content>
+
+      <mat-dialog-content *ngIf="curUser.user_role=='administrator'" class="mat-typography">
+        Set {{candidateAdmin.user_cn}}'s role to 'administrator' for the {{curUser.location_name.toUpperCase()}} location?
+        <mat-form-field style="visibility: hidden; width: 10px;">
+          <input matInput value="{{curUser.location_id}}" formControlName="location_id" [(ngModel)]="curUser.location_id" name="location_id">
+        </mat-form-field>
+      </mat-dialog-content>
+
+      <mat-dialog-content>
+        <mat-form-field appearance="fill">
+          <mat-label>JWICS Email</mat-label>
+          <input matInput formControlName="user_email_jwics" name="user_email_jwics" [(ngModel)]="this.candidateAdmin.user_email_jwics" value="{{this.candidateAdmin.user_email_jwics}}"/>
+          <mat-error *ngIf="_mkAdmin.controls['user_email_jwics'].hasError('required')">
+            JWICS Email is required
+          </mat-error>
+          <mat-error *ngIf="_mkAdmin.controls['user_email_jwics'].hasError('email')">
+            Not a Valid Email
+          </mat-error>
+        </mat-form-field>
+      </mat-dialog-content>
+      
+      <mat-dialog-actions align="end">
+        <button mat-stroked-button mat-dialog-close (click)="cancel()">Cancel</button>
+        <button mat-button type="submit">Save</button>
+      </mat-dialog-actions>
+    </form>
+</ng-template>
+
+
+
+
+
+
+
+
+
+
+
+<ng-template #rmAdminDialog>
+  <div style="width: 450px;" *ngIf="soleAdmin==true, else rmAdmin">
+    <div mat-dialog-title><i class="fas fa-user-lock" style="margin-right: 5px;"></i>User cannot be modified</div>
+    <mat-dialog-content class="mat-typography">
+      This account is locked because '{{this.admin.user_cn}}' is the <strong>only</strong> administrator assigned to {{this.admin.location_name}}. To unlock
+      this account, another user must be designated as an adminstrator for {{this.admin.location_name}}.
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button [mat-dialog-close]="true" (click)="soleAdmin=false">Got It <i style="padding-bottom: 5px;" class="fas fa-thumbs-up"></i></button>
+    </mat-dialog-actions>
+  </div>  
+  <ng-template #rmAdmin>
+    <div style="width: 450px">
+      <mat-dialog-content class="mat-typography">
+        <div *ngIf="this.adminSelfRemoval">
+          <strong>Warning!</strong>  You are about to remove yourself from 'administrator' privileges; you will be placed in 'read-only' status at which time the site will refresh to implement your new credentials.<br/><br/>This will only impact site access privileges; none of your visit notifications will be affected.<br/><br/>
+        </div>
+        <div>
+          Are you sure you want to remove <strong>{{this.nameParts.first_name}} {{this.nameParts.last_name}}</strong> as an adminstrator?
+        </div>
+        
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-stroked-button mat-dialog-close>Cancel</button>
+        <button mat-button (click)="removeAdmin(this.admin, 'remove')" type="submit">Yes, remove</button>
+      </mat-dialog-actions>
+    </div>
+  </ng-template>
+</ng-template>

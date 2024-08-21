@@ -1,0 +1,131 @@
+<div class="pageTitle">Manage Locations
+  <!-- Begin help popup -->
+    <span class="fa-layers fa-fw help-icon help-right">
+      <i class="fas fa-circle help-circle" data-fa-transform="grow-3"></i>
+      <i class="fas fa-circle help-circle-outter" data-fa-transform="grow-2"></i>
+      <i class="fas fa-circle help-circle"></i>
+      <i class="fa-inverse fas fa-question help-question-mark" data-fa-transform="shrink-6"></i>
+      <span style="width: 350px;">
+          <div>
+              <h3>Locations</h3>
+              <p>
+                Locations, also known as destinations, are DIA facilities located at COCOMs and other government locations. The destinations listed below are displayed in a select list throughout the application.
+                A location will not be available for selection if it has no adminstrators assigned or set to disable.
+              </p>
+          </div>
+      </span>
+    </span>
+  <!-- End help popup -->
+</div>
+<div class="page-description">
+  Locations are DIA managed facilities. The locations listed below are displayed as a destination option, if at least one administrator is assigned, and the location is set to active.
+</div>
+
+<!-- Begin Data Table -->
+<div>
+  <mat-card>
+      <mat-card-content>
+        <div style="margin-bottom: 1em;"> 
+          <button mat-raised-button style="color: #737373;" (click)="addLocation()"><span class="material-icons" style="padding-right: .5em; color: var(--primary-color);">add_circle</span>Add Location</button>
+        </div>
+        <div class="mat-elevation-z8">
+          <table mat-table [dataSource]="dataSource" matSort>  
+
+            <!-- Column Location Name  -->
+            <ng-container matColumnDef="location_name">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Location Name </th>
+              <td mat-cell *matCellDef="let row" [ngClass]="(row.location_active=='no')?'locationDisabled':'locationActive'">{{row.location_name}}</td>
+            </ng-container>
+
+            <!-- Column Location Latitude  -->
+            <ng-container matColumnDef="location_lat">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Latitude </th>
+              <td mat-cell *matCellDef="let row" [ngClass]="(row.location_active=='no')?'locationDisabled':'locationActive'">{{row.location_lat}}</td>
+            </ng-container>
+
+            <!-- Column Location Longitude  -->
+            <ng-container matColumnDef="location_long">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Longitude </th>
+              <td mat-cell *matCellDef="let row" [ngClass]="(row.location_active=='no')?'locationDisabled':'locationActive'">{{row.location_long}}</td>
+            </ng-container>
+
+            <!-- Column Location Active  -->
+            <ng-container matColumnDef="location_active">
+              <th mat-header-cell *matHeaderCellDef> &nbsp; </th>
+              <td mat-cell *matCellDef="let row" [ngClass]="(row.location_active=='no')?'locationDisabled':'locationActive'">{{row.location_active == 'yes' ? 'active' : 'disabled'}}</td>
+            </ng-container> 
+
+            <!-- Column edit -->
+            <ng-container matColumnDef="edit">
+              <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
+              <td align="center" id="editData" mat-cell *matCellDef="let row"> <span class="material-icons" matTooltip="Edit Location" (click)="editLocation(row)"><i class="fas fa-pen"></i></span></td>
+            </ng-container>
+            
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            
+          </table>
+        </div>
+      </mat-card-content>
+  </mat-card>
+</div>
+<!-- End Data Table -->
+
+
+<!-- Begin Dialog/Modal Add/Edit Location -->
+<ng-template #nodeDialog>
+    <h2 mat-dialog-title *ngIf="!location.location_id && location.location_id == ''">Add Location</h2>
+    <h2 mat-dialog-title *ngIf="location.location_id && location.location_id != ''">Edit Location</h2>
+ 
+    <form [formGroup]="_addLocation" class="modalProp" (submit)="onSubmit()">
+    <mat-form-field appearance="fill">
+      <mat-label>Location Name</mat-label>
+      <input matInput [(ngModel)]="location_tmp.location_name" formControlName="location_name" name="location_name" required>
+      <mat-error *ngIf="_addLocation.controls['location_name'].hasError('name')">
+        Provide a location name
+      </mat-error>
+      <mat-error *ngIf="_addLocation.controls['location_name'].hasError('duplicate')">
+        A location named '{{this._addLocation.controls['location_name'].value}}' already exists
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Location Active</mat-label>
+      <mat-select [(ngModel)]="location_tmp.location_active" formControlName="location_active" name="location_active" required>
+        <mat-option value="no">Disabled</mat-option>
+        <mat-option value="yes">Active</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Location Latitude (ranging from -90 to 90)</mat-label>
+      <input matInput [(ngModel)]="location_tmp.location_lat" formControlName="location_lat" name="location_lat" >
+      <mat-error *ngIf="_addLocation.controls['location_lat'].hasError('pattern')">
+        Enter a valid Latitude ranging from -90 to +90 (no more than six decimal places)
+      </mat-error>
+      <mat-error *ngIf="_addLocation.controls['location_lat'].hasError('chkLatLong')">
+        Must provide a Latitude (if Longitude provided)  
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Location Longitude (ranging from -180 to +180)</mat-label>
+      <input matInput [(ngModel)]="location_tmp.location_long" formControlName="location_long" name="location_long" >
+      <mat-error *ngIf="_addLocation.controls['location_long'].hasError('pattern')">
+        Enter a valid Longitude ranging from -180 to +180 (no more than six decimal places)
+      </mat-error>
+      <mat-error *ngIf="_addLocation.controls['location_long'].hasError('chkLatLong')">
+        Must provide a Longitude (if Latitude provided)  
+      </mat-error>
+    </mat-form-field>
+
+    <mat-dialog-actions align="end">
+      <button mat-stroked-button mat-dialog-close (click)="cancel()">Cancel</button>
+      <button mat-button type="submit">Save</button>
+    </mat-dialog-actions>
+
+    
+  </form>
+</ng-template>
+<!-- End Dialog/Modal Add/Edit Location -->
+

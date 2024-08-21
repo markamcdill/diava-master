@@ -1,0 +1,137 @@
+<div class="pageTitle">Manage Settings</div>
+
+
+<div class="content-container">
+    <div class="section">
+        <h3>Documents</h3>
+        <div class="subSection">
+            <div id="doc-links">
+                <a href="../../../assets/documents/DiAVA_TechGuide.docx"><i class="fas fa-file-alt"></i>  Technical Guide</a>
+            </div>
+            <div id="doc-links">
+                <a href="../../../assets/documents/DiAVA_InstallProcedures.docx"><i class="fas fa-file-alt"></i>  Install Procedures</a>
+            </div>
+        </div>
+    </div>
+
+    <form [formGroup]="manage_settings">
+        <div class="section">
+            <h3>Application Email Address</h3>
+            <div class="subSection">
+                <p>
+                    The from-address for DIAVA emails 
+                    <span class="fa-layers fa-fw help-icon help-center">
+                        <i class="fas fa-circle help-circle" data-fa-transform="grow-3"></i>
+                        <i class="fas fa-circle help-circle-outter" data-fa-transform="grow-2"></i>
+                        <i class="fas fa-circle help-circle"></i>
+                        <i class="fa-inverse fas fa-question help-question-mark" data-fa-transform="shrink-6"></i>
+                        <span style="width: 350px;">
+                            <div>
+                                <h3>Application Email Address</h3>
+                                <p>The application email address is the "From" email address used for all system auto-generated email notifications.</p>
+                            </div>
+                        </span>
+                    </span>
+                </p>
+                <mat-form-field appearance="fill">
+                <mat-label>Mail Sender Email Address</mat-label>
+                <input matInput formControlName="settings_mail_sender" [(ngModel)]="settings.settings_mail_sender" required>
+                <mat-error *ngIf="manage_settings.controls['settings_mail_sender'].hasError('required')">
+                    Enter mail sender email address 
+                </mat-error>
+                <mat-error *ngIf="manage_settings.controls['settings_mail_sender'].hasError('email')">
+                    Not a Valid Email
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Application Web Address</h3>
+            <div class="subSection">
+                <p>The embeded DIAVA link placed in email confirmation messages</p>
+                <mat-form-field appearance="fill">
+                <mat-label>Application URL</mat-label>
+                <input matInput formControlName="settings_app_url" [(ngModel)]="settings.settings_app_url" required>
+                <mat-error *ngIf="manage_settings.controls['settings_app_url'].hasError('required')">
+                    Enter URL for this application 
+                </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="section">
+            <div>
+                <h3>Application Welcome message</h3>
+                <div class="subSection">
+                    <p>Welcome message displayed on the DIAVA home page</p>
+                    <mat-form-field appearance="fill">
+                        <mat-label>Application Welcome Message</mat-label>
+                        <textarea matInput formControlName="settings_app_welcome_message"  [(ngModel)]="settings.settings_app_welcome_message"></textarea>
+                        <mat-error *ngIf="manage_settings.controls['settings_app_welcome_message'].hasError('pattern')">
+                            Message cannot contain certian characters. Few examples that are not allowed {{'{ } ] [ > <'}}
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Application Alert message</h3>
+            <div class="subSection">
+                <p>Alert message displayed on the DIAVA home page (for the duration of a set date range)</p>
+                <mat-form-field appearance="fill">
+                    <mat-label>Application Alert Message</mat-label>
+                    <textarea matInput formControlName="settings_app_alert_message"  [(ngModel)]="settings.settings_app_alert_message"></textarea>
+                    <mat-error *ngIf="manage_settings.controls['settings_app_alert_message'].hasError('pattern')">
+                        Message cannot contain certian characters. Few examples that are not allowed {{'{ } ] [ > <'}}
+                    </mat-error>
+                    <mat-error *ngIf="manage_settings.controls['settings_app_alert_message'].hasError('noMsg')">
+                        Must provide an alert message if date range defined
+                    </mat-error>
+                </mat-form-field>
+                <p>Select a date range to display the alert message</p>
+                <mat-form-field appearance="fill">
+                    <mat-label>Enter a date range for the alert message</mat-label>
+                    <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate placeholder="Start date" [(ngModel)]="settings.settings_app_alert_start_dt" formControlName="settings_app_alert_start_dt">
+                    <input matEndDate placeholder="End date" [(ngModel)]="settings.settings_app_alert_end_dt" formControlName="settings_app_alert_end_dt">
+                    </mat-date-range-input>
+                    <mat-error *ngIf="manage_settings.controls['settings_app_alert_start_dt'].hasError('noDate')">
+                        Must provide a date range if alert message defined
+                    </mat-error>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker></mat-date-range-picker>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Application Time Out</h3>
+            <div class="subSection">
+                <p>The amount of idle time (in seconds) before the session time out dialogue is displayed and the duration/countdown (in seconds) of the dialogue</p>
+                <mat-form-field appearance="fill">
+                    <mat-label>Application Idle Time</mat-label>
+                    <input matInput formControlName="settings_app_idle_time"  [(ngModel)]="settings.settings_app_idle_time" required>
+                    <mat-error *ngIf="manage_settings.controls['settings_app_idle_time'].hasError('min') || manage_settings.controls['settings_app_idle_time'].hasError('required')">
+                        Provide an idle time (in seconds); must be a number greater than 0
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Application Time Out Duration/Countdown</mat-label>
+                    <input matInput formControlName="settings_app_timeout_duration"  [(ngModel)]="settings.settings_app_timeout_duration" required>
+                    <mat-error *ngIf="manage_settings.controls['settings_app_timeout_duration'].hasError('min') || manage_settings.controls['settings_app_timeout_duration'].hasError('required')">
+                        Provide a time out duration/countdown (in seconds); must be a number greater than 0
+                    </mat-error>
+                </mat-form-field>
+            </div>
+        </div>
+        <div style="text-align: end;">
+            <button class="button-custom" mat-stroked-button routerLink="/manage">Cancel</button>
+            <button mat-button type="submit" (click)="submit()">Save</button>
+        </div>
+    </form>
+</div>
+
+

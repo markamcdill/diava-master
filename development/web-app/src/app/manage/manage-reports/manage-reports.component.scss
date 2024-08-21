@@ -1,0 +1,96 @@
+.full-width {
+    width: 100%;
+}
+
+
+.search-icon {
+    color: var(--primary-color-links);
+    padding-right: 10px;
+}
+
+mat-card {
+    margin: 3rem;
+    border-left: 5px solid var(--primary-color);
+    min-width: 700px !important;
+}
+
+
+table {
+    width: 100%;
+    margin-top: 25px;
+  }
+
+td.mat-cell {
+    cursor: pointer;
+    font-size: 9pt;
+    color: #595959;
+    padding-right: 10px;
+}
+
+h3 {
+    font-weight: bold;
+}
+
+.table-data-view {
+    margin: 0 2em;
+}
+
+.table-data-nav {
+    display: inline-block; 
+    width: 100%;
+
+    div {
+        float: right;
+        padding: 10px 15px;
+        font-size: 10pt;
+        cursor: pointer;
+        color: var(--primary-color-links);
+    }
+
+    :hover {
+        color: #595959;
+    }
+}
+
+.dialog-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+#formSection{
+    margin: 0px 0px 20px 20px;
+    h5 {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        span {
+            font-weight: normal;
+        }
+    }
+}
+
+.cancelled-visit{
+    color: #b3b3b3 !important;
+    text-decoration: line-through;
+}
+
+mat-hint {
+    font-size: 10pt;
+    margin-left: 20px;
+}
+
+.more-info-link {
+    color: var(--primary-color-links);
+    font-size: 8pt;
+}
+
+.more-info-link:hover{
+    color: #000000;
+    font-weight: 500;
+}
+
+mat-dialog-content p {
+    font-size: 1.3em; 
+    font-weight: 300;
+}

@@ -1,0 +1,186 @@
+.classification {
+    padding: .3em;
+    text-align: center;
+    font-weight: bold; 
+    background-color: var(--primary-color); 
+    font-size: 8pt; 
+    border-bottom: 1px #3d3d3d solid; 
+    color: #fff;
+}
+
+.container {
+    text-align: center;
+    padding: .6em 1.2em;
+    background: #d3d9de;
+    border-bottom: 1px solid var(--primary-color);
+    border-top: 2px solid var(--primary-color);
+}
+
+nav {
+    margin-top: .2em;
+}
+
+nav ul {
+    position: fixed;
+    width: 60%;
+    top: 0;
+    right: 0;
+    text-align: left;
+    background: rgb(36,41,44);
+    height: 100%;
+    z-index: 7;
+    padding: 0;
+    padding-top: 3em;
+    list-style-type: none;
+    margin: 0;
+    
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    padding: .5em 1em;
+    background-color: rgb(49,55,59);
+}
+
+nav ul li a:hover {
+    background-color: rgb(65,73,78);
+}
+
+.exit-btn {
+    margin-bottom: 1em;
+    margin-top: -1.8em;
+    text-align: right;
+    padding: 0 1.4em;
+}
+
+.exit-btn img {
+    width: 15px;
+    cursor: pointer;
+}
+
+//begin mobile menu
+.hide-mobile {
+    display: none;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+}
+
+#welcome {
+    display: none;
+}
+
+nav a img {
+    cursor: pointer;
+}
+
+#help-icon {
+    display: none;
+}
+
+
+@media only screen and (min-width: 870px) {
+    .show-desktop {
+        display: block;
+        margin: 0 auto 13% auto;
+    }
+
+    #help {
+        display: none;
+    }
+
+    #help-icon {
+        display: inline;
+    }
+
+    .hide-desktop {
+        display: none;
+    }
+
+    nav ul {
+        position: inherit;
+        width: auto;
+        background: none;
+        height: auto;
+        display: flex;
+        padding-top: 0;
+        margin-top: 0;
+    }
+
+    nav ul li {
+        float: left;
+    }
+
+    nav ul li a {
+        color: #556677;
+        font-size: .9em;
+        background-color: inherit;
+        padding-top: 0;
+        margin-top: 0;
+    }
+
+    nav ul li a:hover {
+        background-color: inherit;
+        color: #000000;
+    }
+
+    #welcome {
+        display: inline;
+        font-size: .7em;
+        color: #556677;
+        cursor: pointer;
+    }
+
+    #welcome:hover {
+        color: #000000;
+    }
+
+    .mat-Tooltip {
+        white-space: pre-line;
+    }
+
+}
+//end mobile menu
+
+.logo {
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+    font-size: 1.2em;
+  
+    span {
+        color: var(--primary-color);
+        font-weight: normal;
+    }
+  
+    p {
+        padding: 0;
+        padding-left: 10px;
+        margin: 0;
+        font-size: .6em;
+        font-weight: normal;
+        letter-spacing: .3em;
+        display: inline-block;
+    }
+  }
+
+  .admin-at {
+    text-align: center;
+    padding: .5em 0;
+    background: #ffcccc;
+    font-size: 10pt;
+    //color: #fff;
+    //border-bottom: 1px solid var(--primary-color);
+    //border-top: 2px solid var(--primary-color);
+}
+
+  
+
+
+
+

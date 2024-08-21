@@ -1,0 +1,147 @@
+<div class="pageTitle">Manage <span *ngIf="user.user_role=='administrator'">{{user.location_name}}</span></div>
+    <main>
+        <div class="card">
+            <mat-card id="administrator" routerLink="/manage_reports">
+                <mat-card-header>
+                    <mat-card-title><i class="fas fa-file-signature"></i></mat-card-title>
+                    <mat-card-subtitle>Reports</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                    Generate Reports
+                    </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-stroked-button routerLink="/manage_reports" >Launch</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="card">
+            <mat-card id="administrator" routerLink="/manage_clearance">
+                <mat-card-header>
+                    <mat-card-title><i class="fas fa-user-shield"></i></mat-card-title>
+                    <mat-card-subtitle>Clearance</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                        Clearance MSG DTG
+                    </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-stroked-button routerLink="/manage_confirmation">Launch</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="card">
+            <mat-card id="administrator" routerLink="/manage_analytics">
+                <mat-card-header>
+                    <mat-card-title><i class="fas fa-chart-bar"></i></mat-card-title>
+                    <mat-card-subtitle>Analytics</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                        Analysis of Data
+                    </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button routerLink="/manage_analytics" mat-stroked-button>Launch</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="card">
+            <mat-card id="administrator" routerLink="/manage_admins">
+                <mat-card-header>
+                    <mat-card-title><i class="fas fa-users-cog"></i></mat-card-title>
+                    <mat-card-subtitle>Administrators</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                    Manage Administrators
+                    </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-stroked-button routerLink="/manage_admins">Launch</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="card" *ngIf="user.user_role == 'administrator'">
+            <mat-card id="administrator" routerLink="/manage_welcome">
+                <mat-card-header>
+                    <mat-card-title><i class="far fa-smile"></i></mat-card-title>
+                    <mat-card-subtitle>Welcome</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                    Manage Welcome Message
+                    </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-stroked-button routerLink="/manage_welcome">Launch</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="card" *ngIf="user.user_role == 'administrator'">
+            <mat-card id="administrator" routerLink="/manage_confirmation">
+                <mat-card-header>
+                    <mat-card-title><i class="fas fa-clipboard-check"></i></mat-card-title>
+                    <mat-card-subtitle>Confirmation</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                    Manage Confirmation Message
+                    </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-stroked-button routerLink="/manage_confirmation">Launch</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="card" *ngIf="user.user_role == 'maintainer'">
+            <mat-card id="maintainer" routerLink="/manage_settings">
+                <mat-card-header>
+                    <mat-card-title><i class="fas fa-cogs"></i></mat-card-title>
+                    <mat-card-subtitle>Settings</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                    Manage Settings <br /><span class="maintainer">Maintainer Access</span>
+                    </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-stroked-button routerLink="/manage_settings">Launch</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="card" *ngIf="user.user_role == 'maintainer'">
+            <mat-card id="maintainer" routerLink="/manage_locations">
+                <mat-card-header>
+                    <mat-card-title><i class="far fa-building"></i></mat-card-title>
+                    <mat-card-subtitle>Locations</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                    Manage locations <br /><span class="maintainer">Maintainer Access</span>
+                    </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-stroked-button routerLink="/manage_locations">Launch</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div class="card" *ngIf="user.user_role == 'maintainer' || user.adminAt">
+            <mat-card id="maintainer" routerLink="/manage_users">
+                <mat-card-header>
+                    <mat-card-title><i class="fas fa-users"></i></mat-card-title>
+                    <mat-card-subtitle>Users</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                    Manage Users <br /><span class="maintainer">Maintainer Access</span>
+                    </p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-stroked-button routerLink="/manage_users">Launch</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+    </main>

@@ -1,0 +1,28 @@
+.mat-form-field {
+    margin-bottom: 1em;
+    width: 100%;
+    font-size: 10pt;
+}
+
+mat-card-header {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+
+    .mat-icon {
+        padding-right: 1em;
+        cursor: pointer;
+        color: #8899aa;
+    }
+}
+
+  button {
+    margin-right: 1em;
+    margin-top: 2em;
+}
+
+.ssnField {
+    margin: 0;
+    padding: 0;
+}

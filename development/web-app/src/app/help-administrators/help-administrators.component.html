@@ -1,0 +1,48 @@
+<div class="pageTitle pageTitleCus">
+  <div>
+    <span class="fa-layers fa-fw help-icon">
+      <i class="fas fa-circle help-circle" data-fa-transform="grow-3"></i>
+      <i class="fas fa-circle help-circle-outter" data-fa-transform="grow-2"></i>
+      <i class="fas fa-circle help-circle"></i>
+      <i class="fa-inverse fas fa-question help-question-mark" data-fa-transform="shrink-6"></i>
+    </span>
+  </div>
+  <div>
+    Help
+  </div>
+</div>
+<div class="card helpForm">
+    <mat-card>
+        <mat-card-content>
+            <p>Do you have questions or need help, select a destination below for a list of administrators.</p>
+            <mat-form-field appearance="fill">
+              <mat-label>Select Location</mat-label>
+              <mat-select (selectionChange)="showAdmins($event)">
+                <ng-container *ngFor="let location of locations">
+                  <mat-option *ngIf="location.location_valid== 'yes'" value="{{location.location_name}}:{{location.location_id}}" [value]="location.location_id">{{location.location_name}}</mat-option>
+                </ng-container>
+              </mat-select>
+            </mat-form-field>
+
+            <ng-container *ngIf="selectedAdmins.length != 0">
+              <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+                <ng-container matColumnDef="user_dn">
+                  <th mat-header-cell *matHeaderCellDef>Administrator</th>
+                  <td mat-cell *matCellDef="let admin"> {{admin.user_dn}} </td>
+                </ng-container>
+              
+                <ng-container matColumnDef="user_email_jwics">
+                  <th mat-header-cell *matHeaderCellDef>Email</th>
+                  <td mat-cell *matCellDef="let admin"> {{admin.user_email_jwics}} </td>
+                </ng-container>
+  
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            </ng-container>
+            <div style="margin-top: 2em;">
+              <a href="../../assets/documents/DiAVA_UserGuide.docx"><i class="fas fa-file-alt"></i>  User Guide</a>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>

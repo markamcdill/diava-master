@@ -1,0 +1,55 @@
+
+.record-data {
+    padding: 0 2em;
+
+    h4 {
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        text-indent: 40px;
+        span {
+            font-weight: normal;
+        }
+    }
+
+    h2 {
+        margin: .5em 0 0 0;
+        padding: 0;
+        font-weight: 300;
+    }
+}
+
+mat-card {
+    margin: 2em 2em;
+    border-left: 5px solid var(--primary-color);
+    background: #f0f3ff;
+
+    div {
+        display: flex;
+    }
+}
+
+.icon-color {
+    color: var(--primary-color);
+}
+
+.additional-travelers{
+    width: 100%;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    th {
+        border-bottom: 1px solid #e6e6e6;
+        padding: 1em;
+    }
+    
+    td {
+        border-bottom: 1px solid #e6e6e6;
+        padding: 1em;
+        font-size: 10pt;
+        white-space: nowrap;
+    }
+}
+
+
+
+

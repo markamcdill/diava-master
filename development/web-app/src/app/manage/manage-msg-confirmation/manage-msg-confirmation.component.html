@@ -1,0 +1,25 @@
+<div class="pageTitle">Manage Confirmation Message</div>
+<div class="card">
+    <mat-card>
+        <mat-card-content>
+            <div class="confInstructions">
+                <mat-hint>
+                    This confirmation message for {{location.location_name}} is displayed once a visit notification has been successfully submitted. 
+                    Leave message blank to remove message from website.
+                </mat-hint>
+            </div>
+            <form [formGroup]="confMsgForm">
+                <mat-form-field appearance="fill">
+                    <mat-label *ngIf="!location.location_conf_msg?.length">Click here to enter or edit confirmation message for {{user.location_name}}</mat-label>
+                    <mat-label *ngIf="location.location_conf_msg?.length">Click on message below to edit confirmation message for {{user.location_name}}</mat-label>
+                    <textarea matInput formControlName="confirmation_message" [(ngModel)]="location.location_conf_msg"></textarea>
+                </mat-form-field>
+                <span style="color:red;" *ngIf="invalidForm"> {{ invalidForm }}</span>
+                <div class="buttonAlignRight">
+                    <button class="button-custom" mat-stroked-button (click)="btnCancel();">Cancel</button>
+                    <button mat-button type="submit" (click)="submit()">Save</button>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>

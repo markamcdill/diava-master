@@ -1,0 +1,11 @@
+urllib3==1.21.1
+werkzeug
+flask
+flask_cors
+uwsgi
+python-dateutil
+apscheduler
+requests
+numpy
+pandas
+elasticsearch==5.5.1

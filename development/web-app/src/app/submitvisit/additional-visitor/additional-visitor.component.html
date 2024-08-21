@@ -1,0 +1,51 @@
+<mat-card-header>
+    
+       <mat-card-title>Additional Traveler Form</mat-card-title>
+
+       <mat-icon (click)="onNoClick()">close</mat-icon>
+    
+</mat-card-header>
+<mat-card-content>
+    <form [formGroup]="_visitorForm" (submit)="onSubmit()">
+        <mat-form-field appearance="fill">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="add_visitor_fname" required>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="add_visitor_lname" required>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Social Security Number</mat-label>
+          <input matInput [type]="ssnHide ? 'password' : 'text'" formControlName="add_visitor_ssn" #ssn required>
+          <button class="ssnField" mat-icon-button matSuffix (click)="ssnHide = !ssnHide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="ssnHide">
+            <mat-icon>{{ssnHide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+          <mat-error *ngIf="_visitorForm.controls['add_visitor_ssn'].hasError('required')">
+            Enter traveler's social security number (format = xxx-xx-xxxx)
+            <span class="privacy-statement" (click)="openDialog()">Privacy Act Statement</span>
+          </mat-error>
+          <mat-hint>Social Security format = xxx-xx-xxxx
+            <span class="privacy-statement" (click)="openDialog()">Privacy Act Statement</span>
+          </mat-hint>
+        </mat-form-field>
+  
+        <mat-form-field appearance="fill">
+            <mat-label>Rank / Grade</mat-label>
+            <input matInput formControlName="add_visitor_rank_grade" required>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>Records Protect? Select</mat-label>
+            <mat-select formControlName="add_visitor_rp" #visitorRP required>
+              <mat-option value="no">No</mat-option>
+              <mat-option value="yes">Yes</mat-option>
+            </mat-select>
+            <mat-hint>Select NO, if you're not familiar with Records Protect (RP) .</mat-hint>
+          </mat-form-field>
+  
+        <div align="end">
+            <button mat-stroked-button (click)="onNoClick()" type="button">Cancel</button>
+            <button mat-button type="submit">Save</button> 
+        </div>
+    </form>
+</mat-card-content>

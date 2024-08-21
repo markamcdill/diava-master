@@ -1,0 +1,67 @@
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "wordnet": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "stop",
+            "wordnet",
+            "my_stemmer"
+          ]
+        },
+        "default_analyzer": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "stop",
+            "my_stemmer"
+          ]
+        },
+        "wordagg_analyzer": {
+          "tokenizer": "standard",
+          "filter": [
+            "lowercase",
+            "stop"
+          ]
+        }
+      },
+      "filter": {
+        "wordnet": {
+          "type": "synonym",
+          "ignore_case": true,
+          "format": "wordnet",
+          "synonyms_path": "analysis/wn_s.pl"
+        },
+        "my_stemmer": {
+          "type": "stemmer",
+          "name": "english"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "visit_notification": {},
+    "_default_":{
+      "properties": {
+        "visit_start_date":{
+          "type": "date",
+          "index": "not_analyzed"
+        },
+        "visit_end_date":{
+          "type": "date",
+          "index": "not_analyzed"
+        },
+        "visit_create_date":{
+          "type": "date",
+          "index": "not_analyzed"
+        },
+        "visit_update_date":{
+          "type": "date",
+          "index": "not_analyzed"
+        }
+      }
+    }
+  }
+}

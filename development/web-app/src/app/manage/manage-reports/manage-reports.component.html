@@ -1,0 +1,221 @@
+<div class="pageTitle" id="pageTitle">Reports <span *ngIf="user.user_role=='administrator'">{{user.location_name}}</span></div>
+
+<div class="content-container">
+  <mat-card id="searchCard">
+    <mat-card-content>
+      <form [formGroup]="searchForm" id="searchForm">
+        <mat-grid-list cols="2" rowHeight="80px" gutterSize="10px">
+          <mat-grid-tile>
+              <span class="material-icons search-icon">search</span>
+              <mat-form-field class="full-width">
+                  <mat-label>Search</mat-label>
+                  <input matInput formControlName="searchTerm" (change)="setSearchError()">
+                  <mat-hint>Search by Notification Id or Traveler Name</mat-hint>
+                  <mat-datepicker-toggle matSuffix (click)="clearSearch('search')" *ngIf="this.searchForm.controls['searchTerm'].value != null">
+                    <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+                  </mat-datepicker-toggle>
+              </mat-form-field>
+          </mat-grid-tile>
+          <mat-grid-tile>
+              <mat-form-field>
+                  <mat-label>Enter a date range</mat-label>
+                  <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate placeholder="Start date" formControlName="arrivalDate" (dateChange)="setSearchError()">
+                    <input matEndDate placeholder="End date" formControlName="departureDate">
+                  </mat-date-range-input>
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker-toggle matSuffix (click)="clearSearch('date')" *ngIf="this.searchForm.controls['arrivalDate'].value != null">
+                    <mat-icon matDatepickerToggleIcon>clear</mat-icon>
+                  </mat-datepicker-toggle>
+                  <mat-date-range-picker #picker></mat-date-range-picker>
+              </mat-form-field>
+              <button style="margin-left: 10px;" mat-raised-button class="mat-button-base mat-button" (click)="search()" id="searchButton">Search</button>
+          </mat-grid-tile>
+        </mat-grid-list>
+      </form>
+      <div *ngIf="this.noResults" class="no-results-found">{{this.noResultsStatement}}</div>
+      <div *ngIf="this.searchError" class="no-results-found">Please provide either a search term or date-range</div>
+    </mat-card-content>
+  </mat-card>
+  <!-- *ngIf="this.visitResults.length != 0;" -->
+  <div class="table-data-view">
+    <div class="mat-elevation-z8" style="min-width: 800px;" [style.visibility] = "this.showHideResults ? 'visible' : 'hidden'" >
+
+      <div class="table-data-nav">
+        <div (click)="printResults()"> 
+          Printer Friendly
+        </div>
+        <div (click)="exportVisits()">
+          Export CSV
+        </div>
+        <!-- <div (click)="exportExcel()" style="display: none;">
+          Export Excel
+        </div> -->
+      </div>
+      <mat-hint><i class="fas fa-exclamation-circle" style="color: #007af3;"></i>&nbsp;
+        Records that have a strikethrough are visits that have been cancelled. 
+      </mat-hint>
+      <table mat-table [dataSource]="dataSource" matSort>
+        
+        <!-- Classification-->
+        <ng-container matColumnDef="visit_classification">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Classification</th>
+          <td mat-cell *matCellDef="let row" (click)="this.viewNotification(row)" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+            {{abbreviate(row.visit_classification_full)}}
+          </td>
+        </ng-container>
+
+        <!-- Location Name -->
+        <ng-container matColumnDef="location_name">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="user.user_role=='administrator'">Location</th>
+            <td mat-cell *matCellDef="let row"  [hidden]="user.user_role=='administrator'" (click)="this.viewNotification(row)" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+              {{row.location_name }}
+            </td>
+        </ng-container>
+
+        <!-- Record Protect -->
+        <ng-container matColumnDef="traveler_rank_grade">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Rank/Grade</th>
+          <td mat-cell *matCellDef="let row" (click)="this.viewNotification(row)" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+            {{row.traveler_rank_grade}}
+          </td>
+        </ng-container>
+
+        <!-- Name -->
+        <ng-container matColumnDef="traveler_full_name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let row" (click)="this.viewNotification(row)" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+            {{row.traveler_full_name}}
+          </td>
+        </ng-container>
+
+        <!-- Office Visiting -->
+        <ng-container matColumnDef="visit_office_name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Office Visiting</th>
+          <td mat-cell *matCellDef="let row" (click)="this.viewNotification(row)" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+            {{row.visit_office_name}}
+          </td>
+        </ng-container>
+
+        <!-- Purpose of Visit -->
+        <ng-container matColumnDef="visit_purpose">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Purpose of Visit</th>
+          <ng-container *matCellDef="let row">
+          <td mat-cell *ngIf="row.visit_purpose.length > 20" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+              <span (click)="this.viewNotification(row)">{{row.visit_purpose | slice: 0: 20}}</span>
+              <span id="more-info-link" (click)="viewPuposeOfVisitDialog(row)" class="more-info-link" matTooltip="Click for full text">...more</span>
+              <!-- Begin Purpuse of Visit full text dialog -->
+                <ng-template #purposeOfVisitDialog>
+                  <h2 mat-dialog-title>Purpose of Visit</h2>
+                  <mat-dialog-content class="mat-typography" style="padding-bottom: 1em;">
+                    {{this.visitPurpose}}
+                  </mat-dialog-content>
+                  <mat-dialog-actions align="end">
+                    <button mat-stroked-button [mat-dialog-close]="true">Close</button>
+                  </mat-dialog-actions>
+                </ng-template>
+              <!-- End Purpuse of Visit full text dialog -->
+          </td>
+          <td mat-cell *ngIf="row.visit_purpose.length < 20" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+            <span (click)="this.viewNotification(row)" >{{row.visit_purpose}}</span>
+          </td>
+          </ng-container>
+        </ng-container>
+
+        <!-- Visit POC -->
+        <ng-container matColumnDef="visit_POC_full">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Visit POC</th>
+          <td mat-cell *matCellDef="let row" (click)="this.viewNotification(row)" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+            {{row.visit_POC_full}}
+          </td>
+        </ng-container>
+        
+        <!-- Arrival Date -->
+        <ng-container matColumnDef="visit_start_dt_display">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Arrival</th>
+          <td mat-cell *matCellDef="let row" (click)="this.viewNotification(row)" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+              {{ row.visit_start_dt_display }} {{ row.visit_start_time+'Z'}}
+          </td>
+        </ng-container>
+
+        <!-- Departure Date -->
+        <ng-container matColumnDef="visit_end_dt_display">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Departure</th>
+          <td mat-cell *matCellDef="let row" (click)="this.viewNotification(row)" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''">
+             {{ row.visit_end_dt_display }} {{ row.visit_end_time+'Z'}}
+          </td>
+        </ng-container>
+
+        <!-- Delete Column -->
+        <ng-container matColumnDef="delete">
+          <th mat-header-cell *matHeaderCellDef> Delete </th>
+          <td mat-cell align="left" id="deleteData" *matCellDef="let row" (click)="this.deleteVisit(row)" [class]="row.visit_status == 'CANCELLED' ? 'cancelled-visit':''"> 
+            <span matTooltip="Delete Record">
+              <i class="far fa-trash-alt"></i>
+            </span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[25, 50, 100]"
+      showFirstLastButtons id="paginator">
+      </mat-paginator>
+    </div>
+  </div>
+
+
+</div>
+
+
+<!-- Begin Dialog/Modal Delete User -->
+<ng-template #deleteConfirmationDialog>
+  <div *ngIf="this.visit_end_date_time < today || this.visitStatus == 'CANCELLED'" style="width: 450px;">
+    <h2 mat-dialog-title><i class="far fa-calendar-times" style="margin-right: 5px;"></i>Delete Record Confirmation</h2>
+    <mat-dialog-content class="mat-typography" style="padding-bottom: 1em;">
+      <p>WARNING! You are about to permanently delete this record!</p>   
+      <mat-checkbox (change)="enableDelete()"></mat-checkbox> If you're sure, then check this box to enable the delete button.
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-stroked-button mat-dialog-close (click)="resetDeleteDisable()">Never mind, close</button>
+      <button style="background-color: #dc143c;" mat-button type="submit" [mat-dialog-close]="true" (click)="confirmDelete()" [disabled]="this.disableDeleteButton">Yes, delete</button>
+    </mat-dialog-actions>
+  </div>
+  <div *ngIf="this.visit_end_date_time >= today && this.visitStatus != 'CANCELLED'" style="width: 450px;">
+    <div mat-dialog-title><i class="fas fa-user-lock" style="margin-right: 5px;"></i>Visit cannot be deleted</div>
+    <mat-dialog-content class="mat-typography" style="padding-bottom: 1em;">
+      <p>Current or future visits cannot be deleted</p>
+    </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button [mat-dialog-close]="true">Got It <i style="padding-bottom: 5px;" class="fas fa-thumbs-up"></i></button>
+      </mat-dialog-actions>
+  </div>
+</ng-template>
+<!-- End Dialog/Modal Delete User -->
+
+<!-- Begin -- Data for printer friendly view, show all visit search results. -->
+<!-- ** Styles are intentionally inline **  -->
+<div id="searchResults" style="display: none;">
+  <table style="width: 100%; font-family: arial; font-size: 10pt; color: #333333">
+    <th style="border-bottom: 2px solid #8c8c8c; font-size: 9pt; text-align: left; color: #8c8c8c">Classification</th>
+    <th style="border-bottom: 2px solid #8c8c8c; font-size: 9pt; text-align: left; color: #8c8c8c">Rank/Grade</th>
+    <th style="border-bottom: 2px solid #8c8c8c; font-size: 9pt; text-align: left; color: #8c8c8c">Name</th>
+    <th style="border-bottom: 2px solid #8c8c8c; font-size: 9pt; text-align: left; color: #8c8c8c">Office Visiting</th>
+    <th style="border-bottom: 2px solid #8c8c8c; font-size: 9pt; text-align: left; color: #8c8c8c">Purpose of Visit</th>
+    <th style="border-bottom: 2px solid #8c8c8c; font-size: 9pt; text-align: left; color: #8c8c8c">Visit POC</th>
+    <th style="border-bottom: 2px solid #8c8c8c; font-size: 9pt; text-align: left; color: #8c8c8c">Arrival</th>
+    <th style="border-bottom: 2px solid #8c8c8c; font-size: 9pt; text-align: left; color: #8c8c8c">Departure</th>
+    <tr *ngFor="let visit of visitResults">
+      <td style="text-align:left; padding: 5px; border-bottom: 1px solid #cccccc;">{{ abbreviate(visit.visit_classification_full)}}</td>
+      <td style="text-align:left; padding: 5px; border-bottom: 1px solid #cccccc;">{{ visit.traveler_rank_grade }}</td>
+      <td style="text-align:left; padding: 5px; border-bottom: 1px solid #cccccc;">{{ visit.traveler_fname }} {{visit.traveler_m_initial}}  {{ visit.traveler_lname }}</td>
+      <td style="text-align:left; padding: 5px; border-bottom: 1px solid #cccccc;">{{ visit.visit_office_name }}</td>
+      <td style="text-align:left; padding: 5px; border-bottom: 1px solid #cccccc;">{{ visit.visit_purpose }}</td>
+      <td style="text-align:left; padding: 5px; border-bottom: 1px solid #cccccc;">{{ visit.visit_lname }}, {{ visit.visit_fname }}</td>
+      <td style="text-align:left; padding: 5px; border-bottom: 1px solid #cccccc;">{{ visit.visit_start_dt_display }} {{ visit.visit_start_time }}Z</td>
+      <td style="text-align:left; padding: 5px; border-bottom: 1px solid #cccccc;">{{ visit.visit_end_dt_display }} {{ visit.visit_end_time }}Z</td>
+    </tr>
+  </table>
+</div>
+<!-- End -- Data for printer friendly view, show all visit search results. -->

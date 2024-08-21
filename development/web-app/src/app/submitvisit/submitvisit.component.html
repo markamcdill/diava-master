@@ -1,0 +1,677 @@
+<!-- Begin Location specific welcome message -->
+<div *ngIf="!showCnf && shortMsg && showWelcomeMsgDiv" class="welcomeMsg">
+  {{this.destinationWelcomeMsgShort}}<span *ngIf="more" (click)="tglWelcomeMsg()">...<span class="moreLess">more</span></span>
+</div>
+
+<div *ngIf="!showCnf && !shortMsg" class="welcomeMsg">
+  {{this.destinationWelcomeMsg}}<span *ngIf="more" (click)="tglWelcomeMsg()">&nbsp;<span class="moreLess">less</span></span>
+</div>
+<!-- End Location specific welcome message -->
+
+
+<!-- Begin Confirmation Message - this message is displayed after a visit notification is submitted -->
+<div *ngIf="showCnf">
+
+  <section class="hero" style="margin: 5em;">
+    <div>
+      <h2>Thank you!</h2>
+        <p>
+          Your visit notification has been submitted successfully and you will be receiving an email confirmation shortly. 
+          To view your scheduled visits or to make changes, go to <a routerLink="/myvisits">My Visits</a>.
+        </p>
+        <div class="hero-cta">
+            <a href="#" routerLink="/home" class="primary-cta">Close</a>
+        </div>
+    </div> 
+    <div *ngIf="this.destinationCnfMsg?.length" class="confirmationMsg">
+      <p>{{this.destinationCnfMsg}}</p> 
+    </div>  
+  </section>
+</div> 
+<!-- End Confirmation Message -->
+
+
+<div *ngIf="!showCnf">
+<div class="mainContent">
+  <mat-card>
+      <mat-horizontal-stepper linear labelPosition="bottom" #stepper>
+      <!-- <mat-horizontal-stepper labelPosition="bottom" #stepper> -->
+      <!-- Begin Destination -->
+      <mat-step [stepControl]="travelDestinationStep">
+        <form [formGroup]="travelDestinationStep">
+          <ng-template matStepLabel><span id="stepLabel">Destination</span></ng-template>
+          <h3>Destination</h3>
+          
+          <p>Where are you traveling to?</p>
+          <mat-form-field appearance="fill">
+            <mat-label>Select</mat-label>
+            <mat-select formControlName="location_name" (ngModelChange)="setLocationDisplayName()" required>
+              <ng-container *ngFor="let location of locations">
+                <mat-option *ngIf="location.location_valid== 'yes'" value="{{location.location_name}}:{{location.location_id}}">{{location.location_name}}</mat-option>
+              </ng-container>
+            </mat-select>
+          </mat-form-field>
+          <h3>On behalf of</h3>
+          <p>Are you submitting this visit notification on behalf of someone else?</p>
+          <mat-form-field appearance="fill">
+            <mat-label>Select</mat-label>
+            <mat-select formControlName="on_behalf" (ngModelChange)="onBehalf()" required>
+              <mat-option value="No">No</mat-option>
+              <mat-option value="Yes">Yes</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'Yes'">
+            <p style="padding-top: 0; margin-top: 0;">Please enter <strong>your</strong> jwics email address. We will ask for the traveler's email in a later step.</p>
+            
+            <mat-form-field  appearance="fill">
+              <mat-label>Your JWICS Email</mat-label>
+              <!-- <input matInput formControlName="traveler_on_behalf_email_jwics" required/> -->
+              <input matInput formControlName="onbehalf_submitted_by_email_jwics" required/>
+              <mat-error *ngIf="this.travelDestinationStep.controls['onbehalf_submitted_by_email_jwics'] && this.travelDestinationStep.controls['onbehalf_submitted_by_email_jwics'].hasError('required')">
+                Enter Your JWICS email 
+              </mat-error>
+              <mat-error *ngIf="this.travelDestinationStep.controls['onbehalf_submitted_by_email_jwics'] && this.travelDestinationStep.controls['onbehalf_submitted_by_email_jwics'].hasError('email')">
+                Enter a valid email address 
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="buttonAlignRight">
+            <a routerLink="/home" class="cancelNotification" (click) = "cancel()">Cancel</a>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <!-- End Desintanation -->
+
+
+      <!-- Begin Travel Dates Step -->
+      <mat-step [stepControl]="travelDatesStep">
+        <form [formGroup]="travelDatesStep">
+          <ng-template matStepLabel><span id="stepLabel">Traveling From / Travel Dates</span></ng-template>
+          <h3>Travel Dates</h3>
+
+          <p *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'No'">Dates that you're traveling?</p>
+          <div style="display: flex;">
+            <div style="width: 30%;">
+              <mat-form-field appearance="fill">
+                <mat-label>Arrival Date</mat-label>
+                <!-- -->
+                <input matInput [matDatepicker]="picker" (ngModelChange)="setDateDisplay()" formControlName="visit_start_dt" disabled required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker disabled="false"></mat-datepicker>
+                <mat-error *ngIf="travelDatesStep.controls['visit_start_dt'].hasError('required')">
+                  Select arrival date 
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div style="width: 70%;margin-left: 10px;">
+              <mat-form-field appearance="fill">
+                <mat-label>Time of Arrival (Zulu)</mat-label>
+                <input matInput formControlName="visit_start_time" required>
+                <mat-error *ngIf="travelDatesStep.controls['visit_start_time'].hasError('required')">
+                  Arrival time must be a valid 24 hour time format (e.g. 0900 or 2300)
+                </mat-error>
+                <mat-hint>Arrival time must be a valid 24 hour time format (e.g. 0900 or 2300)</mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+          <div style="display: flex;">
+            <div style="width: 30%;">
+              <mat-form-field appearance="fill">
+                <mat-label>Departure Date</mat-label>
+                <!-- -->
+                <input matInput [matDatepicker]="picker2" (ngModelChange)="setDateDisplay()" formControlName="visit_end_dt" disabled required>
+                <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                <mat-datepicker #picker2 disabled="false"></mat-datepicker>
+                <mat-error *ngIf="travelDatesStep.controls['visit_end_dt'].hasError('required')">
+                  Select departure date 
+                </mat-error>
+                <mat-error *ngIf="travelDatesStep.controls['visit_end_dt'].hasError('dateCompare')">
+                  Departure Date must be greater than the Arrival Date  
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div style="width: 70%;margin-left: 10px;">
+              <mat-form-field appearance="fill">
+                <mat-label>Time of Departure (Zulu)</mat-label>
+                <input matInput formControlName="visit_end_time" required>
+                <mat-error *ngIf="travelDatesStep.controls['visit_end_time'].hasError('required')">
+                  Departure time must be a valid 24 hour time format (e.g. 0900)
+                </mat-error>
+                <mat-hint>Departure time must be a valid 24 hour time format (e.g. 2300)</mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+          <p *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'No'">
+            Where are you traveling from?
+            <mat-hint>Enter office address, not residence</mat-hint>
+          </p>
+          <p *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'Yes'">
+            Where is the traveler traveling from?
+            <mat-hint>Enter office address, not residence</mat-hint>
+          </p>
+          <mat-form-field appearance="fill">
+            <mat-label>Street Address</mat-label>
+            <input matInput formControlName="traveler_street" required>
+            <mat-error *ngIf="travelDatesStep.controls['traveler_street'].hasError('required')">
+              Enter street address 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>City</mat-label>
+            <input matInput formControlName="traveler_city" required>
+            <mat-error *ngIf="travelDatesStep.controls['traveler_city'].hasError('required')">
+              Enter city 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>State</mat-label>
+            <input matInput formControlName="traveler_state" required>
+            <mat-error *ngIf="travelDatesStep.controls['traveler_state'].hasError('required')">
+              Enter state 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Zip</mat-label>
+            <input matInput formControlName="traveler_zip" required>
+            <mat-error *ngIf="travelDatesStep.controls['traveler_zip'].hasError('required')">
+              Enter zip 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Country</mat-label>
+            <input matInput formControlName="traveler_country" required>
+            <mat-error *ngIf="travelDatesStep.controls['traveler_country'].hasError('required')">
+              Enter country 
+            </mat-error>
+          </mat-form-field>
+          <div class="buttonAlignRight">
+            <a routerLink="/home" class="cancelNotification" (click) = "cancel()">Cancel</a>
+            <button mat-stroked-button color="primary" matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <!-- End Travel Date Step -->
+
+
+      <!-- Begin Traveler Info Step -->
+      <mat-step [stepControl]="travelerInfoStep">
+        <form [formGroup]="travelerInfoStep">
+          <ng-template matStepLabel><span id="stepLabel">Traveler's Information</span></ng-template>
+          <h3>
+            Traveler's information
+            <mat-hint>Information about the person traveling</mat-hint>
+          </h3>
+          <div class="profile" *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'No'">
+            <div class="profile-name">{{user.user_cn}}</div>
+          </div>
+          <mat-form-field appearance="fill" *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'Yes'">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="traveler_fname" required>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_fname'].hasError('required')">
+              Enter traveler's First Name
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill" *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'Yes'">
+            <mat-label>Middle Initial</mat-label>
+            <input matInput formControlName="traveler_m_initial">
+          </mat-form-field>
+          <mat-form-field appearance="fill" *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'Yes'">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="traveler_lname" required>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_lname'].hasError('required')">
+              Enter traveler's Last Name
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Records Protect?</mat-label>
+            <mat-select formControlName="traveler_rp" required>
+              <mat-option value="no">No</mat-option>
+              <mat-option value="yes">Yes</mat-option>
+            </mat-select>
+            <mat-hint>Select NO, if you're not familiar with Records Protect (RP).</mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Rank/Grade</mat-label>
+            <input matInput formControlName="traveler_rank_grade" required>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_rank_grade'].hasError('required')">
+              Enter traveler's rank or grade (CTR Contractor)
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Social Security Number</mat-label>
+            <input matInput [type]="ssnHide ? 'password' : 'text'" formControlName="traveler_ssn" required>
+            <button class="ssnField" mat-icon-button matSuffix (click)="ssnHide = !ssnHide" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="ssnHide">
+              <mat-icon>{{ssnHide ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_ssn'].hasError('required')">
+              Enter traveler's social security number
+              <span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span>
+            </mat-error>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_ssn'].hasError('pattern')">
+              Enter traveler's social security number with the following format = xxx-xx-xxxx
+              <span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span>
+            </mat-error>
+            <mat-hint>Social Security format = xxx-xx-xxxx
+              <span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span>
+            </mat-hint>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>CAC Number</mat-label>
+            <input matInput formControlName="traveler_cac">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Date of Birth</mat-label>
+            <input matInput [matDatepicker]="pickerDOB" formControlName="traveler_dob" (ngModelChange)="setDateDisplay()" required>
+            <mat-datepicker-toggle matSuffix [for]="pickerDOB"></mat-datepicker-toggle>
+            <mat-datepicker #pickerDOB></mat-datepicker>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_dob'].hasError('required')">
+              Enter travelers date of birth 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Organization</mat-label>
+            <input matInput formControlName="traveler_org" required>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_org'].hasError('required')">
+              Enter traveler's organization 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Phone Cell</mat-label>
+            <input matInput formControlName="traveler_phone_cell" required>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_phone_cell'].hasError('required')">
+              Enter traveler's cell phone number 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Phone Unclass</mat-label>
+            <input matInput formControlName="traveler_phone_comm" required>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_phone_comm'].hasError('required')">
+              Enter traveler's Unclass phone number 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Phone VoIP</mat-label>
+            <input matInput formControlName="traveler_phone_nsts">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Traveler's JWICS Email</mat-label>
+            <input matInput formControlName="traveler_email_jwics" required>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_email_jwics'].hasError('required')">
+              Enter a JWICS Email 
+            </mat-error>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_email_jwics'].hasError('email')">
+              Enter a valid email address 
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Email Unclass</mat-label>
+            <input matInput formControlName="traveler_email_niprnet" required>
+            <mat-error *ngIf="travelerInfoStep.controls['traveler_email_niprnet'].hasError('email')">
+              Enter a valid email address 
+            </mat-error>
+          </mat-form-field>
+          <div class="buttonAlignRight">
+            <a routerLink="/home" class="cancelNotification" (click) = "cancel()">Cancel</a>
+            <button mat-stroked-button color="primary" matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <!-- End Traveler Info Step -->
+
+      <!-- Begin Office Visiting Step -->
+      <mat-step [stepControl]="officeVisitingStep">
+        <form [formGroup]="officeVisitingStep">
+          <ng-template matStepLabel><span id="stepLabel">Office Visiting</span></ng-template>
+          <h3>Information about the office being visited</h3>
+          <mat-grid-list cols="2" rowHeight="80px">
+            <mat-grid-tile>
+              <mat-form-field appearance="fill">
+                <mat-label>Select a classification</mat-label>
+                <mat-select formControlName="visit_classification" (selectionChange)="setNoforn()" required>
+                  <mat-option value="UNCLASSIFIED">UNCLASSIFIED</mat-option>
+                  <mat-option value="CONFIDENTIAL">CONFIDENTIAL</mat-option>
+                  <mat-option value="SECRET">SECRET</mat-option>
+                  <mat-option value="TOP SECRET">TOP SECRET</mat-option>
+                </mat-select>
+                <mat-error *ngIf="officeVisitingStep.controls['visit_classification'].hasError('required')">
+                  Select classification for this request
+                </mat-error>
+                <mat-hint>Select classification for this request</mat-hint>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <mat-checkbox formControlName="visit_classification_dissem" class="noforn" [disabled]="officeVisitingStep.controls['visit_classification'].value == '' || officeVisitingStep.controls['visit_classification'].value == 'UNCLASSIFIED'">NOFORN</mat-checkbox>
+            </mat-grid-tile>
+          </mat-grid-list>
+          <mat-form-field appearance="fill">
+            <mat-label>Traveler's Clearance MSG DTG:</mat-label>
+            <input matInput formControlName="visit_clearance_msg_dtg">
+            <mat-error *ngIf="officeVisitingStep.controls['visit_clearance_msg_dtg'].hasError('pattern')">
+              The Clearance MSG DTG must be in a valid format. (e.g. 081840Zmar2010 - day, ZULU Time, month, year 
+            </mat-error>
+            <mat-hint>
+              The Clearance MSG DTG must be in a valid format. (e.g. 081840Zmar2010 - day, ZULU Time, month, year 
+            </mat-hint>
+          </mat-form-field>
+          <p>Office Information</p>
+          <mat-form-field appearance="fill">
+            <mat-label>Office Name</mat-label>
+            <input matInput formControlName="visit_office_name" required>
+            <mat-error *ngIf="officeVisitingStep.controls['visit_office_name'].hasError('required')">
+              Enter Office Name 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Office City</mat-label>
+            <input matInput formControlName="visit_office_city">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Office Country</mat-label>
+            <input matInput formControlName="visit_office_country">
+          </mat-form-field>
+          <p>Traveler's point of contact for the office being visited</p>
+          <mat-form-field appearance="fill">
+            <mat-label>POC's First Name</mat-label>
+            <input matInput formControlName="visit_fname" required>
+            <mat-error *ngIf="officeVisitingStep.controls['visit_fname'].hasError('required')">
+              Enter POC's first name 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>POC's Last Name</mat-label>
+            <input matInput formControlName="visit_lname" required>
+            <mat-error *ngIf="officeVisitingStep.controls['visit_lname'].hasError('required')">
+              Enter POC's last name 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>POC's Rank/Grade</mat-label>
+            <input matInput formControlName="visit_rank_grade" required>
+            <mat-error *ngIf="officeVisitingStep.controls['visit_rank_grade'].hasError('required')">
+              Enter POC's rank or grade (CTR Contractor)
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>POC's JWICS Email</mat-label>
+            <input matInput formControlName="visit_email" required>
+            <mat-error *ngIf="officeVisitingStep.controls['visit_email'].hasError('required')">
+              Enter POC's email
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>POC's Phone Unclass</mat-label>
+            <input matInput formControlName="visit_phone_comm">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>POC's Phone VoIP</mat-label>
+            <input matInput formControlName="visit_phone_nsts">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Purpose of the Visit</mat-label>
+            <textarea matInput formControlName="visit_purpose" required></textarea>
+          </mat-form-field>
+          <p *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'No'">Are you visiting additional offices at this location?</p>
+          <p *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'Yes'">Is the traveler visiting additional offices at this location?</p>
+          <mat-form-field appearance="fill">
+            <mat-label>Enter additional office details</mat-label>
+            <textarea matInput formControlName="visit_additional_offices" autocomplete="off"></textarea>
+            <mat-hint>Enter office name, POC and time/date of visit</mat-hint>
+          </mat-form-field>
+          <div class="buttonAlignRight">
+            <a routerLink="/home" class="cancelNotification" (click) = "cancel()">Cancel</a>
+            <button mat-stroked-button color="primary" matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <!-- End Office Visiting Step -->
+
+      <!-- Begin Lodging Step -->
+      <mat-step [stepControl]="lodgingStep">
+        <form [formGroup]="lodgingStep">
+          <ng-template matStepLabel><span id="stepLabel">Lodging</span></ng-template>
+          <h3 *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'No'">Where will you be lodging?</h3>
+          <h3 *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'Yes'">Where will the traveler be lodging?</h3>
+          <h5>Lodging information is collected for recall purposes and in the case of an emergency.</h5>
+          <mat-form-field appearance="fill">
+            <mat-label>Name of Lodging</mat-label>
+            <input matInput formControlName="visit_lodging_name" required>
+            <mat-error *ngIf="lodgingStep.controls['visit_lodging_name'].hasError('required')">
+              Enter lodging name 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Lodging Street Address</mat-label>
+            <input matInput formControlName="visit_lodging_street" required>
+            <mat-error *ngIf="lodgingStep.controls['visit_lodging_street'].hasError('required')">
+              Enter lodging street 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Lodging City</mat-label>
+            <input matInput formControlName="visit_lodging_city" required>
+            <mat-error *ngIf="lodgingStep.controls['visit_lodging_city'].hasError('required')">
+              Enter lodging city 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Lodging State</mat-label>
+            <input matInput formControlName="visit_lodging_state" required>
+            <mat-error *ngIf="lodgingStep.controls['visit_lodging_state'].hasError('required')">
+              Enter lodging state 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Lodging Phone</mat-label>
+            <input matInput formControlName="visit_lodging_phone" required>
+            <mat-error *ngIf="lodgingStep.controls['visit_lodging_phone'].hasError('required')">
+              Enter lodging phone 
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Comments</mat-label>
+            <textarea matInput formControlName="visit_lodging_comments"></textarea>
+          </mat-form-field>
+          <div class="buttonAlignRight">
+            <a routerLink="/home" class="cancelNotification" (click) = "cancel()">Cancel</a>
+            <button mat-stroked-button color="primary" matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+        </form>
+      </mat-step>
+      <!-- End Lodging Step -->
+
+      <!-- Begin Additional Travelers Step -->
+      <mat-step [stepControl]="addVisitorsStep">
+          <ng-template matStepLabel><span id="stepLabel">Additional Travelers</span></ng-template>
+          <h3>Additional Travelers</h3>
+          
+          <div *ngIf="VisitorList.length == 0 else showTable" style="margin: 2em; margin-bottom: 3em;">
+            <div class="addVisitor">
+              <ul>
+                <li style="padding-bottom: 1em;">
+                  <span *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'No'">Anyone traveling with you during this visit?</span>
+                  <span *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'Yes'">Are there additional travelers attending this visit?</span>
+                <button mat-button style="margin: 0 0 0 1em; padding: .5;" (click)="addVisitor()">Yes, add additional travelers</button>
+              </li>
+              <li>
+                  If no additional travelers, click the "Next" button below to continue...
+              </li>
+            </ul> 
+            </div>
+          </div>
+          
+    
+          <ng-template #showTable>
+            <div style="display: flex; justify-content: center;"> 
+              <button mat-stroked-button (click)="addVisitor()" title="Add Traveler" style="cursor: pointer; margin-top: 0; margin-right: 0;">
+                Add Traveler <i class="fas fa-user-plus" style="padding-bottom: 4px;"></i>
+              </button>
+            </div>
+            <div>
+              <mat-card class="review">
+                <table class="visitorTable">
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Rank</th>
+                  <tr *ngFor="let Visitor of VisitorList">
+                    <td>{{Visitor.add_visitor_fname}}</td>
+                    <td>{{Visitor.add_visitor_lname}}</td>
+                    <td>{{Visitor.add_visitor_rank_grade}}</td>
+                    <td>
+                      <span (click)="editVisitor(Visitor.ID)">
+                          <i class="fas fa-pen" title="Edit Traveler" style="cursor: pointer;"></i>
+                      </span>
+                    </td>
+                    <td>
+                      <span (click)="deleteVisitor(Visitor.ID)">
+                        <i class="far fa-trash-alt" title="Delete Traveler" style="cursor: pointer;"></i>
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </mat-card>
+              <p> Click Next to continue once done adding additional travelers ...</p> 
+            </div>
+          </ng-template>
+          
+          <div class="buttonAlignRight"> 
+            <a routerLink="/home" class="cancelNotification" (click) = "cancel()">Cancel</a>
+            <button mat-stroked-button color="primary" matStepperPrevious type="button">Back</button>
+            <button mat-button matStepperNext type="button">Next</button>
+          </div>
+      </mat-step>
+      <!-- end Additional Travelers Step -->
+
+      <!-- begin review & submit-->
+      <mat-step>
+        <ng-template matStepLabel><span id="stepLabel">Review & Submit</span></ng-template>
+          <section class="hero">
+            <h2>We have everything we need, you're almost done...</h2>
+            
+            <p>Review travel details below then click submit</p>
+
+            <mat-card class="review" *ngIf="this.travelDestinationStep.controls['on_behalf'].value == 'Yes'">
+              <div>
+                <p style="font-size: 9pt;">
+                  This visit notification was submitted by <strong>{{user.user_cn}}</strong> on behalf of
+                  <strong>{{travelerInfoStep.value.traveler_fname}}&nbsp;{{travelerInfoStep.value.traveler_m_initial}}&nbsp;{{travelerInfoStep.value.traveler_lname}}</strong>
+                <p>
+              </div>
+            </mat-card>
+
+            <mat-card class="review">
+              <div>
+                <h3>Destination<a class="editForm" (click)="move(0)">Edit</a></h3>
+                <h5>Traveling to:<span>{{travelDestinationStep.controls['editLocationName'].value}}</span></h5>
+              </div>
+            </mat-card>
+
+            <mat-card class="review">
+              <div>
+                <h3>Traveling From / Travel Dates<a class="editForm" (click)="move(1)">Edit</a></h3>
+                <h5>Street Address:<span>{{travelDatesStep.value.traveler_street}}</span></h5>
+                <h5>City:<span>{{travelDatesStep.value.traveler_city}}</span></h5>
+                <h5>State:<span>{{travelDatesStep.value.traveler_state}}</span></h5>
+                <h5>Zip:<span>{{travelDatesStep.value.traveler_zip}}</span></h5>
+                <h5>Country:<span>{{travelDatesStep.value.traveler_country}}</span></h5>
+                <br />
+                <h5>Arrival Date:<span>{{travelDatesStep.controls['visit_start_dt_display'].value}}</span></h5>
+                <h5>Arrival Time:<span>{{travelDatesStep.value.visit_start_time}}Z</span></h5>
+                <h5>Departure Date:<span>{{travelDatesStep.controls['visit_end_dt_display'].value}}</span></h5>
+                <h5>Departure Time:<span>{{travelDatesStep.value.visit_end_time}}Z</span></h5>
+              </div>
+            </mat-card>
+
+            <mat-card class="review">
+              <div>
+                <h3>Traveler's Information<a class="editForm" (click)="move(2)">Edit</a></h3> 
+                <h5>First Name<span>{{this.traveler_first_name}}</span></h5>
+                <h5>Middle Initial<span>{{this.traveler_middle_initial}}</span></h5>
+                <h5>Last Name<span>{{this.traveler_last_name}}</span></h5>
+                <h5>Record Protect:<span>{{travelerInfoStep.value.traveler_rp}}</span></h5>
+                <h5>Rank/Grade:<span>{{travelerInfoStep.value.traveler_rank_grade}}</span></h5>
+                <h5>Social Security Number:<span>XXX-XX-{{travelerInfoStep.value.traveler_ssn | slice:-4}}</span><span class="privacy-statement" (click)="openPAS()">Privacy Act Statement</span></h5>
+                <h5>CAC Number:<span>{{travelerInfoStep.value.traveler_cac}}</span></h5>
+                <h5>Date of Birth:<span>{{travelerInfoStep.controls['traveler_dob_display'].value}}</span></h5>
+                <h5>Organization:<span>{{travelerInfoStep.value.traveler_org}}</span></h5>
+                <h5>Phone Cell:<span>{{travelerInfoStep.value.traveler_phone_cell}}</span></h5>
+                <h5>Phone Unclass:<span>{{travelerInfoStep.value.traveler_phone_comm}}</span></h5>
+                <h5>Phone VoIP:<span>{{travelerInfoStep.value.traveler_phone_nsts}}</span></h5>
+                <h5>Email Unclass:<span>{{travelerInfoStep.value.traveler_email_niprnet}}</span></h5>
+                <h5>Email Jwics:<span>{{travelerInfoStep.value.traveler_email_jwics}}</span></h5>
+              </div>
+            </mat-card>
+
+            <mat-card class="review">
+              <div>
+                <h3>Office Visiting<a class="editForm" (click)="move(3)">Edit</a></h3>
+                <h5>Classification:
+                  <span *ngIf="!officeVisitingStep.value.visit_classification_dissem">{{officeVisitingStep.value.visit_classification}}</span>
+                  <span *ngIf="officeVisitingStep.value.visit_classification_dissem">{{officeVisitingStep.value.visit_classification}}//NOFORN</span>
+                </h5>
+                <h5>Office Name:<span>{{officeVisitingStep.value.visit_office_name}}</span></h5>
+                <h5>Clearance:<span>{{officeVisitingStep.value.visit_clearance_msg_dtg}}</span></h5>
+                <h5>POC's First Name:<span>{{officeVisitingStep.value.visit_fname}}</span></h5>
+                <h5>POC's Last Name:<span>{{officeVisitingStep.value.visit_fname}}</span></h5>
+                <h5>POC's Rank/Grade:<span>{{officeVisitingStep.value.visit_rank_grade}}</span></h5>
+                <h5>POC's Email:<span>{{officeVisitingStep.value.visit_email}}</span></h5>
+                <h5>POC's Phone Unclass:<span>{{officeVisitingStep.value.visit_phone_comm}}</span></h5>
+                <h5>POC's Phone VoIP:<span>{{officeVisitingStep.value.visit_phone_nsts}}</span></h5>
+                <h5>Purpose of the Visit:<span>{{officeVisitingStep.value.visit_purpose}}</span></h5>
+                <h5>Additional Offices Visiting:<span>{{officeVisitingStep.value.visit_additional_offices}}</span></h5>
+              </div>
+            </mat-card>
+
+            <mat-card class="review">
+              <div>
+                <h3>Lodging<a class="editForm" (click)="move(4)">Edit</a></h3>
+                <h5>Name of Lodging:<span>{{lodgingStep.value.visit_lodging_name}}</span></h5>
+                <h5>Lodging Street Address:<span>{{lodgingStep.value.visit_lodging_street}}</span></h5>
+                <h5>Lodging City:<span>{{lodgingStep.value.visit_lodging_city}}</span></h5>
+                <h5>Lodging State:<span>{{lodgingStep.value.visit_lodging_state}}</span></h5>
+                <h5>Lodging Phone:<span>{{lodgingStep.value.visit_lodging_phone}}</span></h5>
+                <h5>Comments:<span>{{lodgingStep.value.visit_lodging_comments}}</span></h5>
+              </div>
+            </mat-card>
+
+            <mat-card class="review">
+              <div>
+                <h3>Additional Travelers<a class="editForm" (click)="move(5)">Edit</a></h3>
+
+                <div *ngIf="VisitorList.length == 0 else showTableReview" style="margin: 2em; margin-bottom: 3em;">
+                  No additional travelers were added 
+                </div>
+
+                <ng-template #showTableReview>
+                  <table class="visitorTable">
+                    <tr *ngFor="let Visitor of VisitorList">
+                      <td>{{Visitor.add_visitor_fname}}</td>
+                      <td>{{Visitor.add_visitor_lname}}</td>
+                      <td>{{Visitor.add_visitor_rank_grade}}</td>
+                      <td>XXX-XX-{{Visitor.add_visitor_ssn | slice:-4}}</td>
+                      <td *ngIf="Visitor.add_visitor_rp == 'yes'">Record Protect<span matTooltip="User is record protect" style="cursor: pointer;"><i style="color: #c20909" class="fas fa-flag"></i></span></td>
+                    </tr>
+                  </table>
+                </ng-template>
+              </div>
+            </mat-card>
+
+            <div>
+              <a (click)="submit()" class="primary-cta">Submit</a>
+            </div>
+          </section>
+          <div class="buttonAlignRight">
+            <a routerLink="/home" class="cancelNotification" (click) = "cancel()">Cancel</a>
+            <button mat-stroked-button color="primary" matStepperPrevious type="button">Back</button>
+          </div>
+      </mat-step>
+      <!-- end review & submit -->
+    </mat-horizontal-stepper>
+  </mat-card>
+</div>
+</div>

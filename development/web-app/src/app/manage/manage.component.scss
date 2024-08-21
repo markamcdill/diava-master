@@ -1,0 +1,78 @@
+// $colors: #007af3, #007af3, #007af3, #007af3, #007af3, #007af3, #660000, #660000, #660000;
+
+h2.pageTitle {
+    margin-left: 3rem;
+}
+
+main {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    //gap: 1rem; //not supported by Firefox Quantum 60.9.0esr (64-bit)
+    cursor: pointer;
+    margin: 3em;
+
+    .card {
+        transition: transform .5s;
+        padding: .3em;
+        margin: .5em;
+
+            #maintainer
+            {
+                border: 3px solid var(--primary-color-maintainer);
+            }
+
+            #administrator
+            {
+                border: 3px solid  var(--primary-color);
+            }
+
+            // @for $i from 1 through 9 {
+            //     &:nth-of-type(#{$i}) {
+            //         background: nth($colors, $i);
+            //     }
+            // }
+
+            &:hover {
+                transform: translateY(-10px);
+            }
+
+            .mat-card-header {
+                justify-content: center;
+            }
+
+            .mat-card {
+                text-align: center;
+                height: 180px;
+                border-radius: 15px;
+            }
+
+            .mat-card-content {
+                font-size: 9pt;
+            }
+
+            .mat-card-subtitle {
+                font-size: 1.2em;
+                font-weight: 300;
+            }
+            .mat-card-actions {
+                display: flex; 
+                justify-content: center;
+            }
+
+            .mat-stroked-button {
+                margin: 8px;
+                bottom: 0;
+                position: absolute;
+            }
+
+            .svg-inline--fa {
+                font-size: 3em;
+            }
+        
+        }
+}
+
+.maintainer {
+    color: var(--primary-color-maintainer);
+    font-size: 8pt;
+}

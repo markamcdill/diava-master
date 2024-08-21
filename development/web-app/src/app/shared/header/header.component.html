@@ -1,0 +1,46 @@
+
+<!-- Begin Top Classification Bar -->
+    <div class="classification">
+        Dynamic Content -- Highest Classification TOP SECRET//SI/TK//NOFORN
+    </div>
+<!-- End Top Classification Bar -->
+
+
+<div class="container">
+    <header>
+        <a class="logo" routerLink="/home" href="#">D&#299;<span>AVA</span>
+            <p>-DIA Visit Application</p>
+        </a>
+
+        <nav>
+            <a class="hide-desktop">
+                <img src="../assets/images/ham.svg" alt="toggle mobile menu" (click)="toggleMobile()">
+            </a>
+            <ul class="show-desktop hide-mobile" [class.hide-mobile]="mobileClass" id="nav">
+                <li (click)="toggleMobile()" class="exit-btn hide-desktop"><img src="../assets/images/exit.svg" alt="exit mobile menu"></li>
+                <li><a routerLink="/home" (click)="mobileClass=true;">Home</a></li>
+                <li><a routerLink="/myvisits" (click)="mobileClass=true;">My Visits</a></li>
+                <li><a routerLink="/myaccount" (click)="mobileClass=true;">My Account</a></li>
+                <li><a routerLink="/manage" (click)="mobileClass=true;" *ngIf="user.user_role == 'administrator' || user.user_role == 'maintainer'">Manage</a></li>
+                <li><a id="help" routerLink="/help_administrators" (click)="mobileClass=true;">Help</a></li>
+                <li>
+                    <a id="welcome" matTooltip="
+                    Role : {{user.user_role}} {{this.adminAtSymbol}}
+                    Location : {{this.locationLabel}} {{this.disableLabel}}
+                    Last Accessed : {{user.last_active}}">
+                        Hi, {{user.user_cn?.split(' ')[1]}}
+                    </a>
+                </li>
+                <span id="help-icon" [routerLink]="['/help_administrators']" class="fa-layers fa-fw help-icon">
+                    <i class="fas fa-circle help-circle" data-fa-transform="grow-3"></i>
+                    <i class="fas fa-circle help-circle-outter" data-fa-transform="grow-2"></i>
+                    <i class="fas fa-circle help-circle"></i>
+                    <i class="fa-inverse fas fa-question help-question-mark" data-fa-transform="shrink-6"></i>
+                </span>
+            </ul>
+        </nav>
+    </header>
+    
+</div>
+<div class="admin-at" *ngIf="this.showAdminAt">Currently acting as administrator at {{locationLabel}}</div>
+

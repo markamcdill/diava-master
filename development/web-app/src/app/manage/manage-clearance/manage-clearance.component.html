@@ -1,0 +1,120 @@
+<div class="pageTitle">Manage Clearance MSG DTG</div>
+
+<div class="card">
+    <mat-card>
+        <mat-card-content>
+
+                Update a traveler's clearance by searching on the traveler's name or visit record ID; in the results section, click on the edit 
+                icon and update their clearance MSG/DTG. NOTE: past visits cannot be updated and will not be present in the search results.
+            
+            <!-- Begin search -->
+            <div class="search">
+                <form [formGroup]="searchForm" id="searchForm">
+                    <mat-form-field class="filter-cta">
+                        <mat-label>Search by Notification ID or Traveler Name</mat-label>
+                        <input matInput type="text" [(ngModel)]="searchTerm" formControlName="searchTerm">
+                    </mat-form-field>
+                    <button mat-button style="margin-left: 1em;" (click)="search()">Search</button>
+                </form>
+            </div>
+            <!-- End Search -->
+
+            <!-- Begin Query results table -->
+            <div *ngIf="noResults" style="text-align: center; font-size: 2em; font-weight: 300; color: #737373">
+                No results found.
+            </div>
+
+            <div class="mat-elevation-z8" [style.visibility] = "this.showResults ? 'visible' : 'hidden'">
+                <table mat-table [dataSource]="dataSource" matSort>
+            
+                <!-- Classification Column -->
+                <ng-container matColumnDef="visit_classification">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Classification </th>
+                    <td mat-cell *matCellDef="let element"> {{ abbreviate(element.visit_classification_full)}} </td>
+                </ng-container>
+            
+                <!-- Name Column -->
+                <ng-container matColumnDef="traveler_lname">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                    <td mat-cell *matCellDef="let element"> {{element.traveler_lname}} , {{ element.traveler_fname}} </td>
+                </ng-container>
+            
+                <!-- Arrival Date Column -->
+                <ng-container matColumnDef="visit_start_dt_display">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Arrival Date </th>
+                    <td mat-cell *matCellDef="let element"> {{element.visit_start_dt_display}} </td>
+                </ng-container>
+            
+                <!-- Departure Date Column -->
+                <ng-container matColumnDef="visit_end_dt_display">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Departure Date </th>
+                    <td mat-cell *matCellDef="let element"> {{element.visit_end_dt_display}} </td>
+                </ng-container>
+
+                <!-- Update Column -->
+                <ng-container matColumnDef="update">
+                    <th mat-header-cell *matHeaderCellDef>&nbsp;</th>
+                    <td mat-cell id="editData" *matCellDef="let element"><span matTooltip="Update Clearance Data" (click)="clearanceDialog(element)"><i class="fas fa-edit"></i></span></td>
+                </ng-container>
+            
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            
+                <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+            </div>
+            <!-- End Query results table -->
+
+        </mat-card-content>
+    </mat-card>
+</div>
+
+<!-- Begin Clearance Dialog -->
+<ng-template #updateClearanceDialog>
+    <h2 mat-dialog-title><i class="fas fa-user-shield" style="padding-right: .5em;"></i>Update Clearance</h2>
+
+    <div class="clearance-dialog-content">
+        
+        <ul>
+            <li><span>Traveler:</span>{{selectedResult.traveler_fname}} {{selectedResult.traveler_lname}}</li>
+        </ul>
+
+        <form [formGroup]="clearanceForm" class="clearance-dialog-form">
+            
+            <mat-form-field style="padding-bottom: 1em;" appearance="fill">
+                <mat-label>Traveler's Clearance MSG DTG:</mat-label>
+                <input matInput formControlName="visit_clearance_msg_dtg" [(ngModel)]="selectedResult.visit_clearance_msg_dtg" required>
+                <mat-error *ngIf="clearanceForm.controls['visit_clearance_msg_dtg'].hasError('pattern')">
+                Clearance MSG DTG format. (e.g. 081840Zmar2010 - DD, ZULU Time, MMM, YYYY 
+                </mat-error>
+                <mat-hint>
+                Clearance MSG DTG format. (e.g. 081840Zmar2010 - DD, ZULU Time, MMM, YYYY 
+                </mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Clearance Recieved</mat-label>
+                <mat-select formControlName="clearance_recieved" [(ngModel)]="selectedResult.traveler_clearance_recieved" required>
+                  <mat-option value="No">No</mat-option>
+                  <mat-option value="Yes">Yes</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Country Clearance Recieved</mat-label>
+                <mat-select formControlName="clearance_country_recieved" [(ngModel)]="selectedResult.traveler_country_recieved" required>
+                  <mat-option value="No">No</mat-option>
+                  <mat-option value="Yes">Yes</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-dialog-actions align="end">
+                <button mat-stroked-button mat-dialog-close>Cancel</button>
+                <button mat-button type="submit" (click)="saveClearance()">Save</button>
+            </mat-dialog-actions>
+        </form>
+        
+    </div>
+</ng-template>
+<!-- End Clearance Dialog -->
+

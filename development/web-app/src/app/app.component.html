@@ -1,0 +1,25 @@
+<app-security-consent></app-security-consent>
+<app-header></app-header>
+<router-outlet></router-outlet>
+
+<ng-template #timeOutResetDialog>
+    <div class="timeout-header" style="background-color: #000000; color: #ffffff; padding: 1em;">Auto Sign Out</div>
+    <div class="timeout">
+        
+        <div class="timeout-body">
+            <div class="timeout-countdown">
+                <span style="font-size: 50pt;">{{idleState}}</span>s
+            </div>
+            <div class="timeout-message">
+                <h4>Your session is about to end.</h4>
+                <h5 style="color: #808080">You will be signed out due to inactivity; all unsaved information will be lost. Click 'Stay Signed In' to continue.</h5>
+            </div>
+        </div>
+        <div>
+            <div class="acceptButton" >
+                <div class="primary-cta" (click)="reset()">Stay Signed In</div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
